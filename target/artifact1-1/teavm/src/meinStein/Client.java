@@ -9,11 +9,12 @@ public class Client {
 //        meinDisplay = new MeinDisplay();
         meinCtrl = new MeinCtrl();
         meinCtrl.resetBoard();
-        System.out.println("Okay it work?");
 
         var document = HTMLDocument.current();
         var div = document.createElement("div");
-        div.appendChild(document.createTextNode("TeaVM generated element"));
+        var calcElem = document.getElementById("calculate");
+        calcElem.addEventListener("click", (e)->{System.out.println(meinCtrl.cur.toStringArray());});
+        div.appendChild(document.createTextNode("Connect 6 thing"));
         document.getBody().appendChild(div);
     }
 }

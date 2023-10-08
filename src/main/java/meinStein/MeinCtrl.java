@@ -340,7 +340,7 @@ public class MeinCtrl {
             table[len - 6][p] = ct;
             if (len <= (8) && ct > 0) {
                 String bin = Integer.toBinaryString(p);
-                System.out.println(len + " " + chainType[ct] + " " + zeroes.substring(bin.length(), len) + bin);
+//                System.out.println(len + " " + chainType[ct] + " " + zeroes.substring(bin.length(), len) + bin);
             }
         }
     }
@@ -883,6 +883,17 @@ public class MeinCtrl {
             }
             strBuf.append((moveNum / 2 % 2 == 0 ? " b " : " w ") + (moveNum / 2 + 1));
             return strBuf.toString() + "\n" + toBinary();
+        }
+        
+        public String[][] toStringArray() {
+            String[][] result = new String[bSize][bSize];
+            for (int i = 0; i < bSize; i++) {
+                for (int j = 0; j < bSize; j++) {
+                    result[i][j] = Integer.toString(num[i*bSize + j]);
+                }
+            }
+
+            return result;
         }
 
         public int makeMove(Move m) {
