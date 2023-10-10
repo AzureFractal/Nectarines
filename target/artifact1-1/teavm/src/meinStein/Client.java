@@ -13,7 +13,15 @@ public class Client {
         var document = HTMLDocument.current();
         var div = document.createElement("div");
         var calcElem = document.getElementById("calculate");
-        calcElem.addEventListener("click", (e)->{System.out.println(meinCtrl.cur.toStringArray());});
+        calcElem.addEventListener("click", (e)->{
+            String[][] data = meinCtrl.cur.toStringArray();
+            for (int i = 0; i < data.length; i++) {
+                for (int j = 0; j < data[i].length; j++) {
+                    System.out.print(data[i][j] + " ");
+                }
+                System.out.println(); // Move to the next line after each row
+            }
+            });
         div.appendChild(document.createTextNode("Connect 6 thing"));
         document.getBody().appendChild(div);
     }
