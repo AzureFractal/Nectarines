@@ -1281,7 +1281,7 @@ public class MeinCtrl {
 
         boolean sameSlice(int sq1, int sq2) {
             int d = Math.abs(sq1 - sq2);
-            return d < 12 || d % bSize == 0 || d % (bSize - 1) == 0 || d % (bSize + 1) == 0;
+            return (sq1 / bSize) == (sq2 / bSize) || d % bSize == 0 || d % (bSize - 1) == 0 || d % (bSize + 1) == 0;
         }
 
         int l1Distance(int sq1, int sq2) {
@@ -1308,11 +1308,6 @@ public class MeinCtrl {
             boolean won = false;
 
             listEval(colToMove);
-//            int[] closestStoneDistanceWithSq1 = new int[listLen[0]];
-//            for (int n1 = 0; n1 < listLen[0]; n1++) {
-//                int sq2, sq1 = listMoves[n1].i1;
-//                closestStoneDistanceWithSq1[n1] = closestStoneDistance(sq1);
-//            }
             // Loop over square 1
             for (int n1 = listLen[2] = 0; n1 < listLen[0] && !won; n1++) {
                 int sq2, sq1 = listMoves[n1].i1;
@@ -1325,11 +1320,6 @@ public class MeinCtrl {
                     if (listMoves[n1].score < posVal[DEAD4] && n1 + n1 > listLen[0] && !sameSlice(sq1, sq2)) {
                         continue;
                     }
-//                    System.out.println((sq2 % bSize) + "," + (sq2 / bSize) + "," + closestStoneDistance(sq2));
-//                    // Conservative
-//                    if (Math.min(closestStoneDistanceWithSq1[n1], l1Distance(sq1, sq2)) >= 4){//+0*DISTANCE_PRUNING_THRESH) {
-//                        continue;
-//                    }
                     evalSq(colToMove, sq2, tval, pval);
                     pScore = listMoves[n1].pScore + pval[0] - pval[1];
                     oScore = listMoves[n1].oScore + pval[2] - pval[3];
@@ -1637,7 +1627,6 @@ public class MeinCtrl {
                 resetEvaluationString();
                 break;
             }
-//        } while (-posVal[DONE6] < score && score < posVal[DONE6] - 100 && cur.moveNum < ENGINE_DRAW_STONES);
         } while (-posVal[DONE6] < score && score < posVal[DONE6] && cur.moveNum < ENGINE_DRAW_STONES);
 
         int result = 0;
