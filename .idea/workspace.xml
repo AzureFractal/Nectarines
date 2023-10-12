@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="46949ecb-29d6-4e8c-bd5c-192dadf42641" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +76,7 @@
       <updated>1696712437732</updated>
       <workItem from="1696712446936" duration="2333000" />
       <workItem from="1696996239275" duration="3714000" />
-      <workItem from="1697075460564" duration="6047000" />
+      <workItem from="1697075460564" duration="6398000" />
     </task>
     <task id="LOCAL-00001" summary="Added twitch streaming capabilities">
       <created>1697081208348</created>
