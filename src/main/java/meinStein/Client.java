@@ -6,7 +6,6 @@ public class Client {
     private static MeinCtrl meinCtrl;
 
     public static void main(String[] args) {
-//        meinDisplay = new MeinDisplay();
         meinCtrl = new MeinCtrl();
         meinCtrl.resetBoard();
 
@@ -14,14 +13,9 @@ public class Client {
         var div = document.createElement("div");
         var calcElem = document.getElementById("calculate");
         calcElem.addEventListener("click", (e)->{
-            String[][] data = meinCtrl.cur.toStringArray();
-            for (int i = 0; i < data.length; i++) {
-                for (int j = 0; j < data[i].length; j++) {
-                    System.out.print(data[i][j] + " ");
-                }
-                System.out.println(); // Move to the next line after each row
-            }
-            });
+            meinCtrl.cur.anaPlay(2, 2, MeinCtrl.OPT_DEFEND);
+            document.getElementById("comms").setInnerHTML(meinCtrl.cur.toStringEncoding());
+        });
         div.appendChild(document.createTextNode("Connect 6 thing"));
         document.getBody().appendChild(div);
     }

@@ -896,6 +896,17 @@ public class MeinCtrl {
             return result;
         }
 
+        public String toStringEncoding() {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < bSize; i++) {
+                for (int j = 0; j < bSize; j++) {
+                    result.append(String.format("%04d", num[i * bSize + j]));
+                }
+            }
+
+            return result.toString();
+        }
+
         public int makeMove(Move m) {
             setS(m.i1, m.ply % 2 == 0 ? black : white);
             if (m.i2 >= 0) {
