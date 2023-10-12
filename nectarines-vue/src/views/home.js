@@ -7,6 +7,7 @@ import {
   SET_STATUS,
   SET_BOARD,
   SET_STEPS,
+  CHANGE_PLAYER,
   RESET_BOARD,
   FORWARD,
   BACKWARD,
@@ -36,20 +37,11 @@ export default {
       steps: state => state.board.steps,
       stepsTail: state => state.board.stepsTail,
       status: state => state.home.status,
-      deep: state => state.home.deep,
-      spread: state => state.home.spread,
+      current_player: state => state.home.current_player,
       first: state => state.home.first,
       randomOpening: state => state.home.randomOpening,
       version: 'version'
     })
-  },
-  watch: {
-    deep () {
-      this.updateConfig()
-    },
-    spread () {
-      this.updateConfig()
-    }
   },
   methods: {
     showStartDialog () {
@@ -121,24 +113,17 @@ export default {
         position: position,
         role: role
       })
+      this.$store.dispatch(CHANGE_PLAYER)
     },
    
     set (position) {
-      console.log(position);
       const x = position[0]
       const y = position[1]
       if(this.board[x][y] !== 0) {
         throw new Error("NOT_EMPTY")
       }
       
-      this._set(position, 2)
-
-      this.worker.postMessage({
-        type: "GO",
-        x: x,
-        y: y
-      })
-      this.$store.dispatch(SET_status, status.THINKING)
+      this._set(position, this.current_player)
       this.startTime = + new Date()
     },
 
@@ -148,14 +133,5 @@ export default {
     canForward () {
       return this.status === status.PLAYING && this.stepsTail.length >= 2
     },
-    updateConfig () {
-      this.worker.postMessage({
-        type: 'CONFIG',
-        config: {
-          searchDeep: this.deep,
-          spread: this.spread
-        }
-      })
-    }
   }
 }

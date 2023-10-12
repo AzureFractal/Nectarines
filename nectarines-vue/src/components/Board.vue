@@ -12,7 +12,7 @@
             v-if="!!c"
             :key="cIndex"
             @click="clickChessman"
-            :class="'chessman ' + (c === 1 ? 'black ' : 'white ') + (isLast([rowIndex, cIndex]) ? ' last-step' : '') + (isFives([rowIndex, cIndex]) ? ' fives' : '')"
+            :class="'chessman ' + (c === 1 ? 'black ' : 'white ')"
             :style="{
               marginTop: (1.5 + rowIndex*6.53) + '%',
               marginLeft: (1.5 + cIndex*6.53) + '%',
@@ -26,7 +26,7 @@
         v-for="(s, index) in steps"
         :key="index"
         @click="clickChessman"
-        :class="'step ' + (s.role === 1 ? 'black' : 'white') + (isFives(s.position) ? ' fives' : '')"
+        :class="'step ' + (s.role === 1 ? 'black' : 'white')"
         :style="{
           marginTop: (1.5 + s.position[0]*6.53) + '%',
           marginLeft: (1.5 + s.position[1]*6.53) + '%'
@@ -65,22 +65,6 @@ export default {
       e.preventDefault()
       e.stopPropagation()
     },
-    isLast (p) {
-      if (!this.steps.length) return false
-      const last = this.steps[this.steps.length-1].position
-      return last[0] === p[0] && last[1] === p[1]
-    },
-    isFives (p) {
-      if (!this.fives.length) return false
-      for (var i=0;i<this.fives.length;i++) {
-        var f = this.fives[i]
-        if (p[0] === f[0] && p[1] === f[1]) {
-          console.log('is five:', p)
-          return true
-        }
-      }
-      return false
-    }
   }
 }
 </script>
