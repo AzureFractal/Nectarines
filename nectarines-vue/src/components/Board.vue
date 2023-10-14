@@ -14,8 +14,8 @@
             @click="clickChessman"
             :class="'chessman ' + (c === 1 ? 'black ' : 'white ')"
             :style="{
-              marginTop: (0.72150 + rowIndex*5.210653) + '%',
-              marginLeft: (0.72150 + cIndex*5.210653) + '%',
+              marginTop: (0.94150 + rowIndex*5.210653) + '%',
+              marginLeft: (0.94150 + cIndex*5.210653) + '%',
               }">
               </h3>
           </div>
@@ -28,10 +28,10 @@
         @click="clickChessman"
         :class="'step ' + (s.role === 1 ? 'black' : 'white')"
         :style="{
-          marginTop: (0.72150 + s.position[0]*5.210653) + '%',
-          marginLeft: (0.72150 + s.position[1]*5.210653) + '%'
+          marginTop: (0.94150 + s.position[0]*5.210653) + '%',
+          marginLeft: (0.94150 + s.position[1]*5.210653) + '%'
           }">
-          {{index+1}}
+          {{Math.floor((index-1)/2)+2}}
       </div>
     </div>
   </div>
@@ -80,12 +80,12 @@ export default {
 }
 .chessman, .step {
   position: absolute;
-  width: 2rem;
-  height: 2rem;
-  line-height: 2rem;
+  width: 1.85rem;
+  height: 1.85rem;
+  line-height: 1.85rem;
   text-align: center;
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   user-select: none;
 }
 .chessman {

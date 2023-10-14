@@ -591,6 +591,24 @@ public class MeinCtrl {
             return strBuf.toString();
         }
 
+        String getMovesEncoded() {
+            StringBuilder result = new StringBuilder();
+            // Add moves and comments
+            for (int i = 0; i < ply; i++) {
+                result.append(String.format("%04d", move[i].i1));
+                result.append(":");
+                result.append(i % 2 == 0 ? "1" : "2");
+                result.append(",");
+                if (move[i].i2 >= 0) {
+                    result.append(String.format("%04d", move[i].i2));
+                    result.append(":");
+                    result.append(i % 2 == 0 ? "1" : "2");
+                    result.append(",");
+                }
+            }
+            return result.toString();
+        }
+
         /**
          * Save this game or a string to the log file.
          */

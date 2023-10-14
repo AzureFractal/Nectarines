@@ -27,6 +27,47 @@ export default {
     }
   },
   created () {
+    console.log("Initializing for the first time by adding the MutationObserver");
+    const outerThis = this;
+
+    // Select the element by its ID ("comms")
+    const targetElement = document.getElementById('comms');
+
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+
+    // Callback function to execute when changes are detected
+    const callback = function(mutationsList, observer) {
+      const commsLengthPerEntry = 7;
+      const boardLengthToBeRefactored = 19;
+      const element = document.getElementById("comms").innerText;
+      console.log("Hi I read the comms of length", element.length);
+
+      // Clear the current steps
+      while (outerThis.steps.length > 0) {
+        outerThis.steps.pop()
+      }
+
+      outerThis.$store.dispatch("RESET_BOARD");
+
+      for (let i = 0; i < element.length / commsLengthPerEntry; i++) {
+        const entryPosition = parseInt(element.substr(i*commsLengthPerEntry, 4), 10);
+        const entryRole = parseInt(element.substr(i*commsLengthPerEntry+5, 1), 10);
+        const x = entryPosition % boardLengthToBeRefactored;
+        const y = Math.floor(entryPosition / boardLengthToBeRefactored);
+
+        outerThis.$store.dispatch("ADD_CHESSMAN", {
+          position: [y, x],
+          role: entryRole,
+        });
+      }
+    };
+
+    // Create a new Mutation Observer
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target element
+    observer.observe(targetElement, config);
   },
   components: {
     Board,
@@ -118,40 +159,6 @@ export default {
     },
    
     set (position) {
-      if (this.biggerText !== true) {
-        console.log("Initializing for the first time by adding the MutationObserver");
-        const outerThis = this;
-
-        // Select the element by its ID ("comms")
-        const targetElement = document.getElementById('comms');
-
-        // Options for the observer (which mutations to observe)
-        const config = { attributes: true, childList: true, subtree: true };
-
-        // Callback function to execute when changes are detected
-        const callback = function(mutationsList, observer) {
-          const commsLengthPerEntry = 4;
-          const boardLengthToBeRefactored = 19;
-          const element = document.getElementById("comms").innerText;
-          console.log("Hi I read the comms of length", element.length);
-
-          for (let i = 0; i < element.length / commsLengthPerEntry; i++) {
-            const x = i % boardLengthToBeRefactored;
-            const y = Math.floor(i / boardLengthToBeRefactored);
-            const entry = parseInt(element.substr(i*commsLengthPerEntry, commsLengthPerEntry), 10);
-            outerThis.board[y][x] = entry === 0 ? 0 : ((entry + 1) % 2) + 1;
-          }
-        };
-
-        // Create a new Mutation Observer
-        const observer = new MutationObserver(callback);
-
-        // Start observing the target element
-        observer.observe(targetElement, config);
-
-        this.biggerText = true;
-      }
-
       console.log(position);
       const x = position[0]
       const y = position[1]

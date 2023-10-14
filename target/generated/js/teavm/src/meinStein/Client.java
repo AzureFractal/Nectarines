@@ -14,9 +14,9 @@ public class Client {
         var calcElem = document.getElementById("calculate");
         calcElem.addEventListener("click", (e)->{
             meinCtrl.cur.anaPlay(2, 2, MeinCtrl.OPT_DEFEND);
-            document.getElementById("comms").setInnerHTML(meinCtrl.cur.toStringEncoding());
+            document.getElementById("comms").setInnerHTML(meinCtrl.curGame.getMovesEncoded());
         });
-        div.appendChild(document.createTextNode("Connect 6 thing"));
-        document.getBody().appendChild(div);
+//        div.appendChild(document.createTextNode("Connect 6 thing"));
+//        document.getBody().appendChild(div);
     }
 }
