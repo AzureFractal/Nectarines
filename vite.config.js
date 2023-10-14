@@ -6,8 +6,10 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/Nectarines/', // Set the desired public path
   build: {
     sourcemap: false,
+    outDir: 'docs', // Set the output directory to 'docs'
   },
   plugins: [
     vue({
