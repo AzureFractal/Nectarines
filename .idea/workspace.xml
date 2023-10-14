@@ -2,43 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="46949ecb-29d6-4e8c-bd5c-192dadf42641" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/nectarines-vue/vue.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nectarines-vue/classes.js" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/classes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/components/Board.vue" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/components/Board.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/views/home.js" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/views/home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/meinStein/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/meinStein/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/meinStein/MeinCtrl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/meinStein/MeinCtrl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1.war" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1.war" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$LogWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$LogWriter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Move.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Move.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Position.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Position.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Slice.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl$Slice.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/WEB-INF/classes/meinStein/MeinCtrl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/teavm/classes.js" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/teavm/classes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/teavm/classes.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/teavm/classes.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/teavm/classes.js.teavmdbg" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/teavm/classes.js.teavmdbg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/teavm/src/meinStein/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/teavm/src/meinStein/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/artifact1-1/teavm/src/meinStein/MeinCtrl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/artifact1-1/teavm/src/meinStein/MeinCtrl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/meinStein/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/meinStein/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$LogWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$LogWriter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Move.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Move.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Position.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Position.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Slice.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl$Slice.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/meinStein/MeinCtrl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated/js/teavm/classes.js" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated/js/teavm/classes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated/js/teavm/classes.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated/js/teavm/classes.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated/js/teavm/classes.js.teavmdbg" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated/js/teavm/classes.js.teavmdbg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated/js/teavm/src/meinStein/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated/js/teavm/src/meinStein/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated/js/teavm/src/meinStein/MeinCtrl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated/js/teavm/src/meinStein/MeinCtrl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Vue Single File Component" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -54,15 +33,17 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/nectarines-vue" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/nectarines-vue/dist" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\yongp\Downloads\TheosConnect6\nectarines\Nectarines\nectarines-vue\dist\assets" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\yongp\Downloads\TheosConnect6\nectarines\Nectarines\nectarines-vue" />
       <recent name="C:\Users\yongp\Downloads\TheosConnect6\nectarines\Nectarines\nectarines-vue\dist" />
+      <recent name="C:\Users\yongp\Downloads\TheosConnect6\nectarines\Nectarines\nectarines-vue\dist\assets" />
+      <recent name="C:\Users\yongp\Downloads\TheosConnect6\nectarines\Nectarines\docs" />
+      <recent name="C:\Users\yongp\Downloads\TheosConnect6\nectarines\Nectarines\nectarines-vue" />
       <recent name="C:\Users\yongp\Downloads\TheosConnect6\nectarines\Nectarines\nectarines-vue\src" />
     </key>
   </component>
@@ -112,7 +93,7 @@
       <workItem from="1696996239275" duration="3714000" />
       <workItem from="1697075460564" duration="6398000" />
       <workItem from="1697139377817" duration="80000" />
-      <workItem from="1697141527994" duration="7076000" />
+      <workItem from="1697141527994" duration="9851000" />
     </task>
     <task id="LOCAL-00001" summary="Added twitch streaming capabilities">
       <created>1697081208348</created>
@@ -135,7 +116,14 @@
       <option name="project" value="LOCAL" />
       <updated>1697247082084</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Better calc rendering">
+      <created>1697252121705</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1697252121705</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -145,13 +133,14 @@
     <MESSAGE value="Added twitch streaming capabilities" />
     <MESSAGE value="Fixed bug with sameSlice() in meinCtrl. Also removed some useless comments" />
     <MESSAGE value="Moved to using a 19x19 png board" />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved to using a 19x19 png board" />
+    <MESSAGE value="Better calc rendering" />
+    <option name="LAST_COMMIT_MESSAGE" value="Better calc rendering" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="339" y="6" key="CommitChangelistDialog2" timestamp="1697247081468">
+    <state x="339" y="6" key="CommitChangelistDialog2" timestamp="1697252120974">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="339" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1697247081468" />
+    <state x="339" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1697252120974" />
     <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1696713445609">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -168,10 +157,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1696713445609" />
-    <state x="462" y="149" width="611" height="526" key="find.popup" timestamp="1697251013687">
+    <state x="462" y="149" width="611" height="526" key="find.popup" timestamp="1697252867386">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="462" y="149" width="611" height="526" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1697251013687" />
+    <state x="462" y="149" width="611" height="526" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1697252867386" />
     <state x="425" y="187" key="run.anything.popup" timestamp="1697251997509">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
