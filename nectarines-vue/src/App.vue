@@ -1,17 +1,21 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
   <header>
- <!--   <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
     <div class="wrapper">
-      <HelloWorld msg="Nectarines" />
+        <div class="greetings">
+    <h1 class="green">{{ "Nectarines" }}</h1>
+    <h3>
+      Play Connect Six!
+    </h3>
+  </div>
     </div>
   </header>
 
   <RouterView />
+  <i id="comms" >CommunicationChannel</i>
 </template>
 
 <style scoped>
@@ -50,12 +54,34 @@ nav a:first-of-type {
   border: 0;
 }
 
+h1 {
+  font-weight: 500;
+  font-size: 2.6rem;
+  position: relative;
+  top: -10px;
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+.greetings h1,
+.greetings h3 {
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .greetings h1,
+  .greetings h3 {
+    text-align: left;
+  }
+}
+
 @media (min-width: 1024px) {
   header {
     display: flex;
-      margin: auto;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    margin: auto;
+    text-align: center
   }
 
   .logo {
@@ -66,15 +92,6 @@ nav a:first-of-type {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
   }
 }
 </style>
