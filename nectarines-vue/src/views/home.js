@@ -139,14 +139,7 @@ export default {
             const x = i % boardLengthToBeRefactored;
             const y = Math.floor(i / boardLengthToBeRefactored);
             const entry = parseInt(element.substr(i*commsLengthPerEntry, commsLengthPerEntry), 10);
-            // For now we handle the out of bounds ungracefully
-            if (x>=15 || y>=15) {
-              continue;
-            }
             outerThis.board[y][x] = entry === 0 ? 0 : ((entry + 1) % 2) + 1;
-            if (entry !== 0) {
-              console.log("Found:", entry, "at", i, x, y);
-            }
           }
         };
 

@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="46949ecb-29d6-4e8c-bd5c-192dadf42641" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nectarines-vue/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/assets/board.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/assets/board15.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/components/Board.vue" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/components/Board.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/components/Controls.vue" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/components/Controls.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/store/modules/board.js" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/store/modules/board.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nectarines-vue/src/views/home.js" beforeDir="false" afterPath="$PROJECT_DIR$/nectarines-vue/src/views/home.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +29,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/nectarines-vue" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/nectarines-vue/dist" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -77,6 +82,8 @@
       <workItem from="1696712446936" duration="2333000" />
       <workItem from="1696996239275" duration="3714000" />
       <workItem from="1697075460564" duration="6398000" />
+      <workItem from="1697139377817" duration="80000" />
+      <workItem from="1697141527994" duration="2260000" />
     </task>
     <task id="LOCAL-00001" summary="Added twitch streaming capabilities">
       <created>1697081208348</created>
@@ -85,7 +92,14 @@
       <option name="project" value="LOCAL" />
       <updated>1697081208348</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Fixed bug with sameSlice() in meinCtrl. Also removed some useless comments">
+      <created>1697141680198</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1697141680198</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -93,13 +107,14 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added twitch streaming capabilities" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added twitch streaming capabilities" />
+    <MESSAGE value="Fixed bug with sameSlice() in meinCtrl. Also removed some useless comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bug with sameSlice() in meinCtrl. Also removed some useless comments" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="339" y="6" key="CommitChangelistDialog2" timestamp="1697081207175">
+    <state x="339" y="6" key="CommitChangelistDialog2" timestamp="1697247052878">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="339" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1697081207175" />
+    <state x="339" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1697247052878" />
     <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1696713445609">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -116,9 +131,9 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1696713445609" />
-    <state x="462" y="149" width="611" height="526" key="find.popup" timestamp="1697080757341">
+    <state x="462" y="149" width="611" height="526" key="find.popup" timestamp="1697246824022">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="462" y="149" width="611" height="526" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1697080757341" />
+    <state x="462" y="149" width="611" height="526" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1697246824022" />
   </component>
 </project>

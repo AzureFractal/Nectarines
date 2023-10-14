@@ -14,8 +14,8 @@
             @click="clickChessman"
             :class="'chessman ' + (c === 1 ? 'black ' : 'white ')"
             :style="{
-              marginTop: (1.5 + rowIndex*6.53) + '%',
-              marginLeft: (1.5 + cIndex*6.53) + '%',
+              marginTop: (0.72150 + rowIndex*5.210653) + '%',
+              marginLeft: (0.72150 + cIndex*5.210653) + '%',
               }">
               </h3>
           </div>
@@ -28,8 +28,8 @@
         @click="clickChessman"
         :class="'step ' + (s.role === 1 ? 'black' : 'white')"
         :style="{
-          marginTop: (1.5 + s.position[0]*6.53) + '%',
-          marginLeft: (1.5 + s.position[1]*6.53) + '%'
+          marginTop: (0.72150 + s.position[0]*5.210653) + '%',
+          marginLeft: (0.72150 + s.position[1]*5.210653) + '%'
           }">
           {{index+1}}
       </div>
@@ -55,8 +55,8 @@ export default {
       let y = e.offsetX,
           x = e.offsetY,
           width = this.$refs.board.clientWidth,
-          offset = width*0.044,
-          step = width*0.065;
+          offset = width*0.032, // Old 0.044
+          step = width*0.0515; // Old 0.065
       x = Math.floor((x+offset)/step) - 1
       y = Math.floor((y+offset)/step) - 1
       this.$emit('set', [x, y])
@@ -69,12 +69,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+/*This seems to be the same in Controls.vue and Board.vue*/
 .board-inner {
-  width: 37rem;
-  height: 37rem;
+  width: 42rem;
+  height: 42rem;
   margin: 0 auto;
   position: relative;
-  background-image: url("../assets/board.jpg");
+  background-image: url("../assets/board19.png");
   background-size: 100%;
 }
 .chessman, .step {
