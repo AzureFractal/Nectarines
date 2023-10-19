@@ -74,10 +74,10 @@ public class MeinCtrl {
     static final int DEAD2 = 1,  DEAD3 = 2,  LIV2A = 3,  LIV2B = 4,  LIV2C = 5,  LV2D3 = 6,  LIV3A = 7,  LIV3B = 8,
                      DEAD4 = 9,  DEAD5 = 10,  LIVE4 = 11,  LV4D5 = 12,  LIVE5 = 13,  DONE6 = 14;
     static final int OPT_DEFEND = 1;
-    static final int DISTANCE_PRUNING_THRESH = 6;
+    static final int DISTANCE_PRUNING_THRESH = 4;
     static final int ENGINE_DRAW_STONES = 140;
-    int oScoreNumerator0 = 665; // 667;
-    int oScoreNumerator1 = 665; // 667;
+    int oScoreNumerator0 = 665;
+    int oScoreNumerator1 = 665;
     int depth0 = 3;
     int depth1 = 3;
     int quiet0 = 3;
@@ -722,7 +722,7 @@ public class MeinCtrl {
      *  342	343	344	345	346	347	348	349	350	351	352	353	354	355	356	357	358	359	360
      */
     class Position {
-        final int PV_SIZE = 100;//,  SELECTION_SIZE = 40;
+        final int PV_SIZE = 50;
         Move[] listMoves = new Move[bSquare], seldMoves = new Move[bSquare * bSquare / 2];
         int[][] bla = new int[6][bSize], whi = new int[6][bSize];		//   | - / / \ \
         int[] lenS = new int[4], updB = new int[4], updW = new int[4], listLen = new int[3];
@@ -747,8 +747,7 @@ public class MeinCtrl {
 
         public void newStartingPos() {
             for (int sq = 0; sq < bSquare; sq++) {
-                // YH Edit: Subtract 9 from this
-                dist[sq] = Math.max(Math.abs(sq % bSize - 9), Math.abs(sq / bSize - 9)); // -9 +
+                dist[sq] = Math.max(Math.abs(sq % bSize - 9), Math.abs(sq / bSize - 9));
                 num[sq] = 0;
             }
             for (int i = 0; i < whi.length; i++) {
@@ -1257,7 +1256,7 @@ public class MeinCtrl {
                 if (tval[2] >= 5) {
                     score = minVal = posVal[DONE6];	// select only winning squares
                 } else {
-                    score = 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * (strategy == 0? oScoreNumerator0 : oScoreNumerator1)/ 1000; // 2 / 3;
+                    score = 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * (strategy == 0 ? oScoreNumerator0 : oScoreNumerator1) / 1000;
                 }
                 if (closestStoneDistance(sq) >= DISTANCE_PRUNING_THRESH) {
                     score -= 60000;
@@ -1268,7 +1267,6 @@ public class MeinCtrl {
             }
             Arrays.sort(listMoves, 0, listLen[1]);
 
-            // YH: Changed this from DEAD3 to DEAD2, but is a bad idea?
             if (minVal < posVal[DEAD3] * (1000 + (strategy == 0? oScoreNumerator0 : oScoreNumerator1)) / 1660) {
                 minVal = posVal[DEAD3] * (1000 + (strategy == 0? oScoreNumerator0 : oScoreNumerator1)) / 1660;
             }
@@ -1281,16 +1279,6 @@ public class MeinCtrl {
                     listLen[0]++;
                 }
             }
-//            assert listLen[0] > 0: "listLen[0] should be positive";
-//            assert listLen[1] > 0: "listLen[1] should be positive";
-//            assert listLen[1] > listLen[0]: "listLen[1] should be more than listLen[0]";
-
-//            listLen[0] = Math.min(listLen[0], 20);
-//            if (true) {
-//                for (int kk = 0; kk < listMoves.length;kk+=10) {
-//                    System.out.println(listMoves[kk].toString() + listMoves[kk].score + "," + (kk < listLen[0]));
-//                }
-//            }
             listLen[0] = Math.min(listLen[1], listLen[0] + (minVal == posVal[DONE6] ? 0 : 4));
             for (int s = 0; s < listLen[0]; s++) {
                 select1[listMoves[s].i1] = true;
@@ -1302,7 +1290,7 @@ public class MeinCtrl {
             return (sq1 / bSize) == (sq2 / bSize) || d % bSize == 0 || d % (bSize - 1) == 0 || d % (bSize + 1) == 0;
         }
 
-        int l1Distance(int sq1, int sq2) {
+        int lInfDistance(int sq1, int sq2) {
             int x_dist = Math.abs((sq1 % bSize) - (sq2 % bSize));
             int y_dist = Math.abs((sq1 / bSize) - (sq2 / bSize));
 
@@ -1311,9 +1299,9 @@ public class MeinCtrl {
 
         int closestStoneDistance(int sq1) {
             int closestDistance = bSize;
-            for (int sq2 = 0; sq2 < bSquare; sq2++) {
+            for (int sq2 = 0; sq2 < bSquare; sq2++) {C
                 if (num[sq2] != 0) {
-                    closestDistance = Math.min(l1Distance(sq1, sq2), closestDistance);
+                    closestDistance = Math.min(lInfDistance(sq1, sq2), closestDistance);
                 }
             }
 
@@ -1353,15 +1341,7 @@ public class MeinCtrl {
                         }
                         tval[0] += listMoves[n1].tval0;
                         tval[1] += listMoves[n1].tval1;
-                        score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * (strategy == 0? oScoreNumerator0 : oScoreNumerator1) / 1000; // 2 / 3;
-//                        if (true || strategy == 1) {
-//                            if (pv == 0) {
-//                                if (((pvar[0][pv + 1] >> 16) == sq1 && (pvar[0][pv + 1] & 0xffff) == sq2) ||
-//                                        ((pvar[0][pv + 1] >> 16) == sq2 && (pvar[0][pv + 1] & 0xffff) == sq1)) {
-//                                    score += 5000;
-//                                }
-//                            }
-//                        }
+                        score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * (strategy == 0 ? oScoreNumerator0 : oScoreNumerator1) / 1000;
                     }
                     seldMoves[listLen[2]++].set(cur.moveNum / 2, sq1, sq2, score, oScore, pScore, tval);
                 }
