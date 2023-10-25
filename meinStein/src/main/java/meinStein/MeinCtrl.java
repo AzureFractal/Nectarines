@@ -628,7 +628,7 @@ public class MeinCtrl {
      */
     static class Move implements Comparable, Cloneable {
 
-        int ply, i1, i2, score, oScore, pScore, tval0, tval1;
+        int ply, i1, i2, score, oScore, pScore, tval0, tval1, tval2;
 
         public Move() {
         }
@@ -641,10 +641,11 @@ public class MeinCtrl {
             this.oScore = oScore;
             this.pScore = pScore;
             if (tval == null) {
-                tval0 = tval1 = 0;
+                tval0 = tval1 = tval2 = 0;
             } else {
                 tval0 = tval[0];
                 tval1 = tval[1];
+                tval2 = tval[2];
             }
         }
 
@@ -656,13 +657,13 @@ public class MeinCtrl {
             this.oScore = oScore;
             this.pScore = pScore;
             if (tval == null) {
-                tval0 = tval1 = 0;
+                tval0 = tval1 = tval2 = 0;
             } else {
                 tval0 = tval[0];
                 tval1 = tval[1];
+                tval2 = tval[2];
             }
         }
-
         /**
          * Create algebraic notation for this move.
          *
@@ -1261,7 +1262,7 @@ public class MeinCtrl {
                 if (closestStoneDistance(sq) >= DISTANCE_PRUNING_THRESH) {
                     score -= 60000;
                 }
-                if (score >= minVal) {	//	 || sq == 254
+                if (score >= minVal) {
                     listMoves[listLen[1]++].set(moveNum / 2, sq, -1, score, oScore, pScore, tval);
                 }
             }

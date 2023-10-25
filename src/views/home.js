@@ -43,11 +43,7 @@ export default {
       const element = document.getElementById("comms").innerText;
       console.log("Hi I read the comms of length", element.length);
 
-      // Clear the current steps
-      while (outerThis.steps.length > 0) {
-        outerThis.steps.pop()
-      }
-
+      outerThis.steps = [];
       outerThis.$store.dispatch("RESET_BOARD");
 
       for (let i = 0; i < element.length / commsLengthPerEntry; i++) {
@@ -168,6 +164,16 @@ export default {
       
       this._set(position, this.current_player)
       this.startTime = + new Date()
+
+      const boardSize = 19;
+      let tempString = "";
+      for (let i=0;i<this.steps.length;i++) {
+        tempString += (this.steps[i].position[0] * boardSize + this.steps[i].position[1]).toString().padStart(4, '0');
+        tempString += ":";
+        tempString += (((Math.floor((i+1)/2)) % 2)+1).toString();
+        tempString += ",";
+      }
+      document.getElementById('comms').innerText = tempString;
     },
 
     canBackward () {
