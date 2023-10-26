@@ -38,11 +38,9 @@ public class MeinCtrl {
 
     static final int white = 1,  empty = 0,  black = -1;
     static final int bSize = 19,  bSquare = bSize * bSize;
-    static final String tabs = "\t\t\t\t";
-    static final float WON = 0.5f,  LOST = -0.5f;
     static final String zeroes = "00000000000000000000000000000000";
     static final String spaces = "                                ";
-    static final int chainMask[] = {0x00, //    Indexed by number of bits on.
+    static final int[] chainMask = {0x00, //    Indexed by number of bits on.
         0x000001, 0x000003, 0x000007, 0x00000f, 0x00001f, 0x00003f, 0x00007f, 0x0000ff,
         0x0001ff, 0x0003ff, 0x0007ff, 0x000fff, 0x001fff, 0x003fff, 0x007fff, 0x00ffff,
         0x01ffff, 0x03ffff, 0x07ffff, 0x0fffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff
@@ -75,6 +73,7 @@ public class MeinCtrl {
     static final int OPT_DEFEND = 1;
     static final int DISTANCE_PRUNING_THRESH = 4;
     static final int ENGINE_DRAW_STONES = 140;
+    static int moveInitiativePoints = 2100;
     int oScoreNumerator = 660;
     int depth0 = 2;
     int depth1 = 2;
@@ -82,8 +81,6 @@ public class MeinCtrl {
     int quiet1 = 3;
     int selectionSize0 = 20;
     int selectionSize1 = 20;
-    int arbValue0 = 2000;
-    int arbValue1 = 2000;
     int selectionSize = 20;
     long timeWhite = 0;
     long timeBlack = 0;
@@ -105,13 +102,8 @@ public class MeinCtrl {
     Position cur = new Position();
     Game curGame = null;
     int round = 1, defendCol = empty;
-    String pasteString;
-    LogWriter htmlLog;
     long time0, timeE;
-    int countNodeVal, countTopMoveVal;
     byte[] table[] = new byte[MAX_SEG_LENGTH - 5][];
-    final boolean html = false;
-    MemoryDB memDB = new MemoryDB();
 
     public MeinCtrl() {
         nf.setMinimumIntegerDigits(2);
@@ -189,8 +181,6 @@ public class MeinCtrl {
         for (int i = 0; i < sorted.length; i++) {
             displayString = displayString + "\r\n" + sorted[i];
         }
-
-//        System.out.println(Arrays.toString(moveInfoScores));
     }
 
     boolean make6(int size, int me, int op, int bstart, int stones) {
@@ -345,13 +335,6 @@ public class MeinCtrl {
         }
     }
 
-    public String timeString() {
-        Calendar now = Calendar.getInstance();
-        return nf.format(now.get(Calendar.DAY_OF_MONTH)) + "-" +
-            nf.format(now.get(Calendar.HOUR_OF_DAY)) + ":" +
-            nf.format(now.get(Calendar.MINUTE)) + " ";
-    }
-
     public String parseHead(String game, String field) {
         int f0, f1;
         if ((f0 = game.indexOf(field + "[")) >= 0) {
@@ -361,86 +344,6 @@ public class MeinCtrl {
             }
         }
         return field;
-    }
-
-    public int parseMoves(String gameString) {
-        char[] ch = gameString.toCharArray();
-        boolean comment = false, whiteWins;
-        int plies = 0, f0, f1;
-        Move m;
-        /*
-        1.j10 2.i9l10 3.j8l8 4.k8m7 5.i11j12 6.k9j9
-        7.l9l7 8.k10k7 9.k11k6 10.g9j5
-        or:
-        (;FF[4]EV[connect6.mc.2006.sep.1.10]PB[xooox]PW[Theo van der Storm]SO[http://www.littlegolem.com]
-        ;B[j10];W[i9l10];B[j8l8];W[k8m7];B[i11j12];W[k9j9];B[l9l7];W[k10k7];B[k11k6];W[g9j5])
-
-        curGame."Little Golem"
-        String event, site, date, round;
-        String white, black, result, fen, start;
-
-         */
-        whiteWins = gameString.lastIndexOf('W') > gameString.lastIndexOf('B');
-        curGame.event = parseHead(gameString, "EV");
-        curGame.site = parseHead(gameString, "SO");
-        curGame.black = parseHead(gameString, "PB");
-        curGame.white = parseHead(gameString, "PW");
-        curGame.result = whiteWins ? "0-1" : "1-0";
-        for (int i = 5; i < ch.length; i++) {
-            int i1, i2;
-            if (i < ch.length - 1 && ch[i] == '1' && ch[i + 1] >= '0' && ch[i + 1] <= '9') {
-                continue;	// skip first of two digits (not row 1).
-            }
-            if (ch[i] >= '1' && ch[i] <= '9' &&
-                ch[i - 1] >= 'a' && ch[i - 1] <= 's' &&
-                ch[i - 2] >= '1' && ch[i - 2] <= '9' &&
-                ch[i - 3] >= 'a' && ch[i - 3] <= 's' && !comment) {
-                i2 = ch[i - 1] - 'a' + bSize * (bSize + '0' - ch[i]);
-                i1 = ch[i - 3] - 'a' + bSize * (bSize + '0' - ch[i - 2]);
-            } else if (ch[i] >= '1' && ch[i] <= '9' &&
-                ch[i - 1] >= 'a' && ch[i - 1] <= 's' &&
-                ch[i - 2] >= '0' && ch[i - 2] <= '9' && ch[i - 3] == '1' &&
-                ch[i - 4] >= 'a' && ch[i - 4] <= 's' && !comment) {
-                i2 = ch[i - 1] - 'a' + bSize * (bSize + '0' - ch[i]);
-                i1 = ch[i - 4] - 'a' + bSize * (bSize + '0' - ch[i - 2] - 10);
-            } else if (ch[i] >= '0' && ch[i] <= '9' && ch[i - 1] == '1' &&
-                ch[i - 2] >= 'a' && ch[i - 2] <= 's' &&
-                ch[i - 3] >= '0' && ch[i - 3] <= '9' && ch[i - 4] == '1' &&
-                ch[i - 5] >= 'a' && ch[i - 5] <= 's' && !comment) {
-                i2 = ch[i - 2] - 'a' + bSize * (bSize + '0' - ch[i] - 10);
-                i1 = ch[i - 5] - 'a' + bSize * (bSize + '0' - ch[i - 3] - 10);
-            } else if (ch[i] >= '0' && ch[i] <= '9' && ch[i - 1] == '1' &&
-                ch[i - 2] >= 'a' && ch[i - 2] <= 's' &&
-                ch[i - 3] >= '1' && ch[i - 3] <= '9' &&
-                ch[i - 4] >= 'a' && ch[i - 4] <= 's' && !comment) {
-                i2 = ch[i - 2] - 'a' + bSize * (bSize + '0' - ch[i] - 10);
-                i1 = ch[i - 4] - 'a' + bSize * (bSize + '0' - ch[i - 3]);
-            } else {
-                i1 = i2 = -1;
-            }
-            if (i1 >= 0) {
-                String fen = cur.toBinary();
-                if (tryMove(i2, i1, 0) >= 0 && tryMove(i1, i2, 0) >= 0) {
-                    plies++;
-                    memDB.add(fen, i1, i2,
-                        plies % 2 == 0 ? curGame.black : curGame.white,
-                        gameString.length(), (plies % 2 == 1) == whiteWins,
-                        curGame.event + ";" + (plies % 2 == 1 ? curGame.black : curGame.white));
-                } else {
-                    break;	// Invalid move
-                }
-            }
-            if (ch[i] == '{') {
-                comment = true;
-            }
-            if (ch[i] == '}') {
-                comment = false;
-            }
-        }
-        if (html) {
-            htmlLog.add("<td style=\"vertical-align: top;\">\n" + curGame.getPgn("<br>\n") + "\n</td></tr>\n");
-        }
-        return plies;
     }
 
     public void takeBack(int mod) {
@@ -483,18 +386,18 @@ public class MeinCtrl {
         String event, site, date, round;
         String white, black, result, fen, start;
         int ply;
-        Move move[];
+        Move[] move;
 
         public Game(String event, String site, String date, String round,
             String black, String white, String result, String fen, String start) {
             Calendar now = Calendar.getInstance();
-            if (true == event.isEmpty()) {
+            if (event.isEmpty()) {
                 this.event = event + " @ " +
                     now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE);
             } else {
                 this.event = event;
             }
-            if (true == date.isEmpty()) {
+            if (date.isEmpty()) {
                 this.date = now.get(Calendar.YEAR) + "." + (1 + now.get(Calendar.MONTH)) + "." +
                     now.get(Calendar.DAY_OF_MONTH);
             } else {
@@ -814,7 +717,6 @@ public class MeinCtrl {
 
         public String toBinary() {
             StringBuffer strBuf = new StringBuffer();
-            String moveString;
             int n = 0, nn[] = normalise();
             for (int i = 0; i < bSquare; i++) {
                 if (nn[i] == 0) {
@@ -1054,9 +956,6 @@ public class MeinCtrl {
             defendCol = empty;
             time0 = System.currentTimeMillis();
             timeE = time0 + cutOffTime;
-            countNodeVal = 0;
-            countTopMoveVal = 0;
-            System.out.println(this);
             pvar[0][0] = 0;
             System.out.println("Guess:" + coord(pvar[0][1]) + coord(pvar[0][2]) + coord(pvar[0][3]));
             score = cur.pvs(-posVal[DONE6] + 1000, posVal[DONE6] - 1000, col, depth, 0, eval(col));
@@ -1073,7 +972,7 @@ public class MeinCtrl {
                 }
             }
             long runTime = (System.currentTimeMillis() - time0);
-            System.out.println(runTime + "ms. nodes: " + countTopMoveVal + "/" + countNodeVal);
+            System.out.println(runTime + "ms.");
             if (col==black) {timeBlack += runTime;} else {timeWhite += runTime;};
             return score;
         }
@@ -1095,7 +994,7 @@ public class MeinCtrl {
                 } else {
                     int newDepth = depth - 1;
                     boolean deeper = newDepth > 0;
-                    score = dScore + moves[m].pScore - (strategy == 0 ? arbValue0 : arbValue1);
+                    score = dScore + moves[m].pScore - moveInitiativePoints;
                     if (deeper) {
                         defendCol = empty;
                     }
@@ -1155,8 +1054,6 @@ public class MeinCtrl {
                         return score;
                     }
                 }
-                countNodeVal++;
-                countTopMoveVal++;
                 if (System.currentTimeMillis() >= timeE) {
                     timeE = 0L;
                     return max;
@@ -1174,8 +1071,9 @@ public class MeinCtrl {
             // pval1 notColor's value if color plays sq
             // pval2 notColor's value if notColor plays sq
             // pval3 color's value if notColor plays sq
-
-            pval[3] = pval[2] = pval[1] = tval[0] = tval[1] = 0;
+            pval[3] = pval[2] = pval[1] = 0;
+            // tval2: Maximum length of threat due to playing sq
+            tval[0] = tval[1] = tval[2] = 0;
             // Calculate values as a baseline without playing sq
             setS(sq, empty);
             for (int d = 0; d < updB.length; d++) {
@@ -1242,8 +1140,7 @@ public class MeinCtrl {
             for (int sq = 0; sq < bSquare; sq++) {
                 select1[sq] = false;
                 // If square is not empty, or far away from existing stones, skip.
-                if (num[sq] != empty || closestStoneDistance(sq) >= DISTANCE_PRUNING_THRESH)
-                {
+                if (num[sq] != empty || closestStoneDistance(sq) >= DISTANCE_PRUNING_THRESH) {
                     continue;
                 }
 
@@ -1311,8 +1208,9 @@ public class MeinCtrl {
             boolean won = false;
 
             listEval(colToMove);
+            listLen[2] = 0;
             // Loop over square 1
-            for (int n1 = listLen[2] = 0; n1 < listLen[0] && !won; n1++) {
+            for (int n1 = 0; n1 < listLen[0] && !won; n1++) {
                 int sq2, sq1 = listMoves[n1].i1;
                 assert num[sq1] == empty: "First square wasn't empty when we tried to place";
                 setS(sq1, colToMove);
