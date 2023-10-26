@@ -1221,9 +1221,19 @@ public class MeinCtrl {
                     if (listMoves[n1].score < posVal[DEAD4] && n1 + n1 > listLen[0] && !sameSlice(sq1, sq2)) {
                         continue;
                     }
-                    evalSq(colToMove, sq2, tval, pval);
-                    pScore = listMoves[n1].pScore + pval[0] - pval[1];
-                    oScore = listMoves[n1].oScore + pval[2] - pval[3];
+                    // Only evalSq when sameSlice, since otherwise there is no interaction between the two stones
+                    if (sameSlice(sq1, sq2)) {
+                        evalSq(colToMove, sq2, tval, pval);
+                        pScore = listMoves[n1].pScore + pval[0] - pval[1];
+                        oScore = listMoves[n1].oScore + pval[2] - pval[3];
+                    } else {
+                        pScore = listMoves[n1].pScore + listMoves[n2].pScore;
+                        oScore = listMoves[n1].oScore + listMoves[n2].oScore;
+                        tval[0] = listMoves[n2].tval0;
+                        tval[1] = listMoves[n2].tval1;
+                        tval[2] = listMoves[n2].tval2;
+                        pval[0] = pval[1] = pval[2] = pval[3] = Integer.MIN_VALUE;
+                    }
                     if (tval[2] >= 6) {
                         score = posVal[DONE6];
                         won = true;
