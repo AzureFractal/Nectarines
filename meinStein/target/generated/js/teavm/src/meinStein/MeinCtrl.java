@@ -75,8 +75,7 @@ public class MeinCtrl {
     static final int OPT_DEFEND = 1;
     static final int DISTANCE_PRUNING_THRESH = 4;
     static final int ENGINE_DRAW_STONES = 140;
-    int oScoreNumerator0 = 665;
-    int oScoreNumerator1 = 665;
+    int oScoreNumerator = 660;
     int depth0 = 2;
     int depth1 = 2;
     int quiet0 = 3;
@@ -100,10 +99,6 @@ public class MeinCtrl {
 
     Random rnd = new Random();
 
-    //	X is White, Y is Black.
-    // Mode variables
-    boolean anaMode = false, flippedMode = true, coloMode = true;
-    boolean matchMode = false, whiteSetupMode = false, annotMode = false;
     int setupStone = 0;
     int highFR = -1, highTO = -1;
     NumberFormat nf = NumberFormat.getInstance();
@@ -1236,7 +1231,8 @@ public class MeinCtrl {
             setS(sq, empty);
         }
 
-        // WLog the first move is "closer" to main body than second
+        // Evaluates score of performing a list of single stone moves
+        // (WLog the first move is "closer" to main body than second)
         public void listEval(int colToMove) {
             int score, oScore, pScore, minVal = -posVal[DONE6];
             int[] tval = new int[3], pval = new int[4];
@@ -1245,7 +1241,8 @@ public class MeinCtrl {
 
             for (int sq = 0; sq < bSquare; sq++) {
                 select1[sq] = false;
-                if (num[sq] != empty) // not empty
+                // If square is not empty, or far away from existing stones, skip.
+                if (num[sq] != empty || closestStoneDistance(sq) >= DISTANCE_PRUNING_THRESH)
                 {
                     continue;
                 }
@@ -1256,10 +1253,7 @@ public class MeinCtrl {
                 if (tval[2] >= 5) {
                     score = minVal = posVal[DONE6];	// select only winning squares
                 } else {
-                    score = 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * (strategy == 0 ? oScoreNumerator0 : oScoreNumerator1) / 1000;
-                }
-                if (closestStoneDistance(sq) >= DISTANCE_PRUNING_THRESH) {
-                    score -= 60000;
+                    score = 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
                 }
                 if (score >= minVal) {
                     listMoves[listLen[1]++].set(moveNum / 2, sq, -1, score, oScore, pScore, tval);
@@ -1267,11 +1261,13 @@ public class MeinCtrl {
             }
             Arrays.sort(listMoves, 0, listLen[1]);
 
-            if (minVal < posVal[DEAD3] * (1000 + (strategy == 0? oScoreNumerator0 : oScoreNumerator1)) / 1660) {
-                minVal = posVal[DEAD3] * (1000 + (strategy == 0? oScoreNumerator0 : oScoreNumerator1)) / 1660;
+            if (minVal < posVal[DEAD3] * (1000 + oScoreNumerator) / 1660) {
+                minVal = posVal[DEAD3] * (1000 + oScoreNumerator) / 1660;
             }
 
-            for (int s = listLen[0] = 0; s < listMoves.length; s++) {
+            assert listLen[1] > 0: "listLen[1] should be positive";
+
+            for (int s = listLen[0] = 0; s < listLen[1]; s++) {
                 if (listMoves[s].score <= 0) {
                     listLen[1] = s;
                     break;
@@ -1308,6 +1304,7 @@ public class MeinCtrl {
             return closestDistance;
         }
 
+        // Mutate moves to become a list of candidate 2-stone moves
         public int select(int colToMove, Move moves[], int pv) {
             int[] tval = new int[3], pval = new int[4];
             int score, oScore, pScore;
@@ -1341,7 +1338,7 @@ public class MeinCtrl {
                         }
                         tval[0] += listMoves[n1].tval0;
                         tval[1] += listMoves[n1].tval1;
-                        score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * (strategy == 0 ? oScoreNumerator0 : oScoreNumerator1) / 1000;
+                        score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
                     }
                     seldMoves[listLen[2]++].set(cur.moveNum / 2, sq1, sq2, score, oScore, pScore, tval);
                 }
@@ -1350,50 +1347,36 @@ public class MeinCtrl {
             }
 //            System.out.println("Num moves considered:" + listLen[2] + ", ll0:" + listLen[0] + ", ll1:" + listLen[1] + ", pv:" + pv);
             Arrays.sort(seldMoves, 0, listLen[2]);
-            if (moves == null) {
-                int len = Math.min(2 * selectionSize, listLen[2]);
 
-                System.out.println("stones: " + listLen[0] + " " + listLen[1]);
-                for (int s = 0; s < listLen[0]; s++) {
-                    System.out.println(s + " " + listMoves[s] +
-                        " " + listMoves[s].oScore + " " + listMoves[s].pScore + " " + listMoves[s].score);
-                }
+            // Old logic Start:
+//            int len = Math.min(moves.length, listLen[2]);
+//            for (int s = 0; s < len; s++) {
+//                moves[s] = (Move) seldMoves[s].clone();
+//            }
+            // Old logic End
 
-                System.out.println("moves: " + listLen[2]);
-                for (int s = 0; s < len; s++) {
-                    System.out.println(s + " " + seldMoves[s] +
-                        " " + seldMoves[s].oScore + " " + seldMoves[s].pScore + " " + seldMoves[s].score);
-                }
-                return len;
-            } else {
-//                int len = Math.min(moves.length, listLen[2]);
-//                for (int s = 0; s < len; s++) {
-//                    moves[s] = (Move) seldMoves[s].clone();
-//                }
-                // We reserve some candidate moves for non threat moves. This is because sometimes there are too many
-                // threat moves when we don't want to make a threat move
-                int len = Math.min(moves.length, listLen[2]);
-                int reservedNonThreatMoves = len / 5;
-                int s = 0;
-                int src = 0;
-                while (s < len - reservedNonThreatMoves) {
-                    moves[s] = (Move) seldMoves[src].clone();
-                    s++;
-                    src++;
-                }
-                while (s < len) {
-                    // If move doesn't make a threat, consider it
-                    if (seldMoves[src].tval0 == 0) {
-                        moves[s] = (Move) seldMoves[src].clone();
-                        s++;
-                    }
-                    src++;
-                }
-//                if (src!=s) {
-//                    System.out.println("Reservation in effect");
-//                }
-                return len;
+            // New logic Start:
+            // We reserve some candidate moves for non threat moves. This is because sometimes there are too many
+            // threat moves when we don't want to make a threat move
+            int len = Math.min(moves.length, listLen[2]);
+            int reservedNonThreatMoves = len / 5;
+            int tgt_idx = 0;
+            int src_idx = 0;
+            while (tgt_idx < len - reservedNonThreatMoves) {
+                moves[tgt_idx] = (Move) seldMoves[src_idx].clone();
+                tgt_idx++;
+                src_idx++;
             }
+            while (tgt_idx < len) {
+                // If move doesn't make a threat, consider it
+                if (seldMoves[src_idx].tval0 == 0) {
+                    moves[tgt_idx] = (Move) seldMoves[src_idx].clone();
+                    tgt_idx++;
+                }
+                src_idx++;
+            }
+            // New logic End
+            return len;
         }
 
         @SuppressWarnings("empty-statement")
@@ -1602,6 +1585,7 @@ public class MeinCtrl {
         cur.makeMove(curGame.forward());	// Obligatory first black move
     }
 
+    // Currently unused
     int playEngineGame() {
         timeBlack = timeWhite = 0;
         int score;
