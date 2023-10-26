@@ -73,7 +73,6 @@ const mutations = {
     state.fives = fives
   },
   [ADD_CHESSMAN] (state, {position, role}) {
-    console.log(position, role)
     let newBoard = copy(state.board)
     newBoard[position[0]][position[1]] = role
     state.board = newBoard

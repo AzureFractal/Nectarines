@@ -15,7 +15,11 @@ import { RouterLink, RouterView } from 'vue-router'
   </header>
 
   <RouterView />
-  <div id="comms" >CommunicationChannel</div>
+  <div id="comms" class="invis">CommunicationChannel</div>
+  <div id="comms1" class="invis">Communication Channel For Status</div>
+  <div id="comms2" class="invis">Communication Channel For Best Moves</div>
+  <div id="statusText" >Status Text</div>
+  <div id="bestMoves" >Best Moves</div>
 </template>
 
 <style scoped>
@@ -65,7 +69,7 @@ h3 {
   font-size: 1.2rem;
 }
 
-#comms {
+.invis {
   display: none;
 }
 

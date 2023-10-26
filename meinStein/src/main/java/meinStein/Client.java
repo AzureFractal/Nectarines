@@ -13,22 +13,20 @@ public class Client {
 
         var calcElem = document.getElementById("calculate");
         calcElem.addEventListener("click", (e)->{
+            document.getElementById("comms1").setInnerHTML("Thinking");
             String commsStr = document.getElementById("comms").getInnerText();
-            System.out.println(commsStr);
             var userMoves = commsStr.split(",");
             // Play user moves from buffer
             if (userMoves.length > 1) {
-                int stone1 =  Integer.valueOf(userMoves[userMoves.length-2].split(":")[0]);
-                int stone2 =  Integer.valueOf(userMoves[userMoves.length-1].split(":")[0]);
-                System.out.println("HELLO WORLD");
-                System.out.println(stone1);
-                System.out.println(stone2);
+                int stone1 =  Integer.parseInt(userMoves[userMoves.length-2].split(":")[0]);
+                int stone2 =  Integer.parseInt(userMoves[userMoves.length-1].split(":")[0]);
                 meinCtrl.tryMove(stone1, stone2, 0);
                 meinCtrl.tryMove(stone2, stone1, 0);
             }
             // Get computer moves and update buffer 
             meinCtrl.cur.anaPlay(2, 2, MeinCtrl.OPT_DEFEND);
             document.getElementById("comms").setInnerHTML(meinCtrl.curGame.getMovesEncoded());
+            document.getElementById("comms1").setInnerHTML("Done");
         });
     }
 }

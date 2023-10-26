@@ -59,10 +59,8 @@ export default {
       }
     };
 
-    // Create a new Mutation Observer
+    // Create Mutation Observer, and observe
     const observer = new MutationObserver(callback);
-
-    // Start observing the target element
     observer.observe(targetElement, config);
   },
   components: {
