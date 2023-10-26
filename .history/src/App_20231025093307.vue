@@ -66,8 +66,9 @@ h3 {
 }
 
 #comms {
-  display: none;
+  display: false;
 }
+
 
 .greetings h1,
 .greetings h3 {

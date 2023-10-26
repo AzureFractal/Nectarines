@@ -32,7 +32,7 @@ const state = {
 
 const getters = {
   lang: state => state.lang,
-  status: state => state.status,
+  tatus: state => state.status,
   current_player: state => state.current_player,
   showSteps: state => state.showSteps,
   first: state => state.first,

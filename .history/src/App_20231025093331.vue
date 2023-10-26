@@ -69,6 +69,7 @@ h3 {
   display: none;
 }
 
+
 .greetings h1,
 .greetings h3 {
   text-align: center;
