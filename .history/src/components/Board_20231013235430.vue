@@ -69,6 +69,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+/*This seems to be the same in Controls.vue and Board.vue*/
 .board-inner {
   width: 42rem;
   height: 42rem;

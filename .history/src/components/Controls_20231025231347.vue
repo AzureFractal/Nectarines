@@ -13,9 +13,7 @@
 export default {
   methods: {
     undoMove() {
-      var commsArr = document.getElementById('comms').innerText.split(",");
-      console.log(commsArr.slice(0,commsArr.length-2))
-      document.getElementById('comms').innerText = commsArr.slice(0,commsArr.length-2).join(",");
+      comms_string = document.getElementById('comms').innerText = tempString;
     }
   }
 }

@@ -13,9 +13,9 @@
 export default {
   methods: {
     undoMove() {
-      var commsArr = document.getElementById('comms').innerText.split(",");
-      console.log(commsArr.slice(0,commsArr.length-2))
-      document.getElementById('comms').innerText = commsArr.slice(0,commsArr.length-2).join(",");
+      var comms_string = document.getElementById('comms').innerText;
+      console.log(comms_string.split(",").slice(0,comms_string.length-2))
+      document.getElementById('comms').innerText = comms_string.split(",").slice(0,comms_string.length-2);
     }
   }
 }
