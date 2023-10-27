@@ -5,19 +5,19 @@
  * to commemorate Theo. This is done with consent of Theo's family.
  *
  * The software is AS IS and under GPL v3, see below.
- * 
+ *
  * This file is part of MeinStein Connect6.
- * 
+ *
  * MeinStein Connect6 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * MeinStein Connect6 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with MeinStein Connect6.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -25,12 +25,13 @@
 package meinStein;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.IntStream;
 
 /**
- * 
+ *
  * @author theo
  * @version 1.10.01
  */
@@ -41,9 +42,9 @@ public class MeinCtrl {
     static final String zeroes = "00000000000000000000000000000000";
     static final String spaces = "                                ";
     static final int[] chainMask = {0x00, //    Indexed by number of bits on.
-        0x000001, 0x000003, 0x000007, 0x00000f, 0x00001f, 0x00003f, 0x00007f, 0x0000ff,
-        0x0001ff, 0x0003ff, 0x0007ff, 0x000fff, 0x001fff, 0x003fff, 0x007fff, 0x00ffff,
-        0x01ffff, 0x03ffff, 0x07ffff, 0x0fffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff
+            0x000001, 0x000003, 0x000007, 0x00000f, 0x00001f, 0x00003f, 0x00007f, 0x0000ff,
+            0x0001ff, 0x0003ff, 0x0007ff, 0x000fff, 0x001fff, 0x003fff, 0x007fff, 0x00ffff,
+            0x01ffff, 0x03ffff, 0x07ffff, 0x0fffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff
     };
     /** Chain Types:
      ** definitions:
@@ -67,14 +68,17 @@ public class MeinCtrl {
     static final int[] posVal1 = {0, 100, 300, 400, 400, 400, 600, 1000, 1000, 1200, 1200, 2400, 2500, 2500, 1000000};
     static final int[] thrVal = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 10};
     static final int[] thrLen = {1, 2, 3, 2, 2, 2, 3, 3, 3, 4, 5, 4, 5, 5, 6};
-    static final int MAX_SEG_LENGTH = 15;
+    static final int[] runningFeatCountWhite = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static final int[] runningFeatCountBlack =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     static final int DEAD2 = 1,  DEAD3 = 2,  LIV2A = 3,  LIV2B = 4,  LIV2C = 5,  LV2D3 = 6,  LIV3A = 7,  LIV3B = 8,
-                     DEAD4 = 9,  DEAD5 = 10,  LIVE4 = 11,  LV4D5 = 12,  LIVE5 = 13,  DONE6 = 14;
+            DEAD4 = 9,  DEAD5 = 10,  LIVE4 = 11,  LV4D5 = 12,  LIVE5 = 13,  DONE6 = 14;
+    static final int NUM_FEAT = 15;
+    static final int MAX_SEG_LENGTH = 15;
     static final int OPT_DEFEND = 1;
     static final int DISTANCE_PRUNING_THRESH = 4;
     static final int ENGINE_DRAW_STONES = 140;
     static int moveInitiativePoints = 2100;
-    int oScoreNumerator = 660;
+    public static int oScoreNumerator = 660;
     int depth0 = 2;
     int depth1 = 2;
     int quiet0 = 3;
@@ -120,43 +124,21 @@ public class MeinCtrl {
      * 4                        2                           3
      * 5                        2                           3
      */
-    public int tryMove(int i1, int i2, int button) {
-        if (setupStone > 0) {
-            int stone = button - 2;
+    public int tryMove(int i1, int i2) {
+        if (cur.num[i2] > 0) // occupied
+        {
+            return -1;
+        }
+        if (cur.moveNum % 2 == 0) {	// first stone of a move
+            int stone = cur.moveNum / 2 % 2 == 0 ? black : white;
             cur.setS(i2, stone);
-        } else {
-            if (cur.num[i2] > 0) // occupied
-            {
-                return -1;
-            }
-            if (cur.moveNum % 2 == 0) {	// first stone of a move
-                int stone = cur.moveNum / 2 % 2 == 0 ? black : white;
-                cur.setS(i2, stone);
-            } else {				// second stone of a move
-                Move m;
-                cur.setS(i1, empty);
-                int stone = cur.moveNum / 2 % 2 == 0 ? black : white;
-                int pScore = getMovePscore(stone, i1, i2);
-                // Calculate the move value
-                curGame.add(m = new Move(cur.moveNum / 2, i1, i2, 0, 0, pScore, null));
-                cur.makeMove(m);
-//                System.out.println("Board eval: " + curGame.getBoardScore());
-            }
+        } else {				// second stone of a move
+            Move m;
+            cur.setS(i1, empty);
+            curGame.add(m = new Move(cur.moveNum / 2, i1, i2));
+            cur.makeMove(m);
         }
         return i2;
-    }
-
-    public int getMovePscore(int colToMove, int i1, int i2) {
-        int[] tval = new int[3], pval = new int[4];
-        int pScore = 0;
-        cur.evalSq(colToMove, i1, tval, pval);
-        pScore += pval[0] - pval[1];
-        cur.setS(i1, colToMove);
-        cur.evalSq(colToMove, i2, tval, pval);
-        pScore += pval[0] - pval[1];
-
-        cur.setS(i1, empty);
-        return pScore;
     }
 
     public void resetEvaluationString() {
@@ -387,17 +369,17 @@ public class MeinCtrl {
         Move[] move;
 
         public Game(String event, String site, String date, String round,
-            String black, String white, String result, String fen, String start) {
+                    String black, String white, String result, String fen, String start) {
             Calendar now = Calendar.getInstance();
             if (event.isEmpty()) {
                 this.event = event + " @ " +
-                    now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE);
+                        now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE);
             } else {
                 this.event = event;
             }
             if (date.isEmpty()) {
                 this.date = now.get(Calendar.YEAR) + "." + (1 + now.get(Calendar.MONTH)) + "." +
-                    now.get(Calendar.DAY_OF_MONTH);
+                        now.get(Calendar.DAY_OF_MONTH);
             } else {
                 this.date = date;
             }
@@ -410,7 +392,7 @@ public class MeinCtrl {
             this.start = start;
             ply = 0;
             move = new Move[1 + bSquare / 2];
-            add(new Move(ply, (bSquare - 1) / 2, -1, 0, 0, 0, null));
+            add(new Move(ply, (bSquare - 1) / 2, -1));
             back();
         }
 
@@ -470,12 +452,12 @@ public class MeinCtrl {
             String c;
             // Add header
             strBuf.append("[Event \"" + event + "\"]" + eol +
-                "[Site \"" + site + "\"]" + eol +
-                "[Date \"" + date + "\"]" + eol +
-                "[Round \"" + round + "\"]" + eol +
-                "[Black \"" + black + "\"]" + eol +
-                "[White \"" + white + "\"]" + eol +
-                "[Result \"" + result + "\"]" + eol);
+                    "[Site \"" + site + "\"]" + eol +
+                    "[Date \"" + date + "\"]" + eol +
+                    "[Round \"" + round + "\"]" + eol +
+                    "[Black \"" + black + "\"]" + eol +
+                    "[White \"" + white + "\"]" + eol +
+                    "[Result \"" + result + "\"]" + eol);
 
             // Add moves and comments
             for (int i = 0; i < ply; i++) {
@@ -519,45 +501,84 @@ public class MeinCtrl {
     }
 
     /**
-     * 
+     * A Move object represents either just 1 stone (i1), or 2 stones (i1 and i2) of a move
+     * If it represents just 1 stone, i2 is set to -1
+     * The Move object also possibly stores information about the scoring of the move
      */
     static class Move implements Comparable, Cloneable {
 
-        int ply, i1, i2, score, oScore, pScore, tval0, tval1, tval2;
+        int ply, i1, i2, score, oScore, pScore;
+        int[] tval, pval, featCountPlayer, featCountOpp;
 
         public Move() {
         }
 
-        public Move(int ply, int i1, int i2, int score, int oScore, int pScore, int tval[]) {
+        public Move(int ply, int i1, int i2) {
             this.ply = ply;
             this.i1 = i1;
             this.i2 = i2;
-            this.score = score;
-            this.oScore = oScore;
-            this.pScore = pScore;
-            if (tval == null) {
-                tval0 = tval1 = tval2 = 0;
-            } else {
-                tval0 = tval[0];
-                tval1 = tval[1];
-                tval2 = tval[2];
-            }
         }
 
-        public void set(int ply, int i1, int i2, int score, int oScore, int pScore, int tval[]) {
+        public Move(int ply, int i1, int i2, int score, int pScore, int oScore,
+                    int[] tval, int[] pval, int[] featCountPlayer, int[] featCountOpp) {
             this.ply = ply;
             this.i1 = i1;
             this.i2 = i2;
             this.score = score;
             this.oScore = oScore;
             this.pScore = pScore;
-            if (tval == null) {
-                tval0 = tval1 = tval2 = 0;
+            this.tval = tval.clone();
+            this.pval = pval.clone();
+            this.featCountPlayer = featCountPlayer.clone();
+            this.featCountOpp = featCountOpp.clone();
+        }
+
+        // This function assumes that both moves were calculated independently, but that cur now includes i1 played
+        public Move combineWithSecondStoneMove(Move tentativeMove2, Position cur, int colToMove) {
+            // Check that both moves are single-stone moves of the same ply
+            assert this.i2 == -1;
+            assert tentativeMove2.i2 == -1;
+            assert this.ply == tentativeMove2.ply;
+            int sq1 = this.i1, sq2 = tentativeMove2.i1;
+            int[] tval = new int[3], pval = new int[4];
+            int[] featCountPlayer = new int[NUM_FEAT], featCountOpp = new int[NUM_FEAT];
+            int pScore, oScore, score;
+
+            Move move2;
+            if (cur.sameSlice(sq1, sq2)) {
+                move2 = cur.evalSq(colToMove, sq2, tval, pval, featCountPlayer, featCountOpp);
             } else {
-                tval0 = tval[0];
-                tval1 = tval[1];
-                tval2 = tval[2];
+                move2 = tentativeMove2;
             }
+
+            pScore = this.pScore + move2.pScore;
+            oScore = this.oScore + move2.oScore;
+            tval[0] = this.tval[0] + move2.tval[0];
+            tval[1] = this.tval[1] + move2.tval[1];
+            tval[2] = Math.max(this.tval[2], move2.tval[2]);
+
+            pval[0] = this.pval[0] + move2.pval[0];
+            pval[1] = this.pval[1] + move2.pval[1];
+            pval[2] = this.pval[2] + move2.pval[2];
+            pval[3] = this.pval[3] + move2.pval[3];
+
+            for (int i = 0; i < NUM_FEAT; i++) {
+                featCountPlayer[i] = this.featCountPlayer[i] + move2.featCountPlayer[i];
+                featCountOpp[i] = this.featCountOpp[i] + move2.featCountOpp[i];
+            }
+
+            if (move2.tval[2] >= 6) {
+                score = posVal[DONE6];
+            } else {
+                if (this.tval[0] == 0 && move2.tval[0] > 0) {
+                    score = posVal[DEAD4];
+                } else {
+                    score = 0;
+                }
+                score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
+            }
+
+            return new Move(this.ply, sq1, sq2, score, pScore, oScore, tval, pval, featCountPlayer, featCountOpp);
         }
         /**
          * Create algebraic notation for this move.
@@ -567,7 +588,7 @@ public class MeinCtrl {
         @Override
         public String toString() {
             String s = (ply + 1) + "." + (ply % 2 == 0 ? 'B' : 'W') + (char) ('a' + i1 % bSize) + String.valueOf(bSize - i1 / bSize) +
-                (i2 < 0 ? "" : (char) ('a' + i2 % bSize) + String.valueOf(bSize - i2 / bSize));
+                    (i2 < 0 ? "" : (char) ('a' + i2 % bSize) + String.valueOf(bSize - i2 / bSize));
             return s + spaces.substring(s.length(), 11);
         }
 
@@ -796,7 +817,7 @@ public class MeinCtrl {
             strBuf.append((moveNum / 2 % 2 == 0 ? " b " : " w ") + (moveNum / 2 + 1));
             return strBuf.toString() + "\n" + toBinary();
         }
-        
+
         public String[][] toStringArray() {
             String[][] result = new String[bSize][bSize];
             for (int i = 0; i < bSize; i++) {
@@ -957,13 +978,28 @@ public class MeinCtrl {
             pvar[0][0] = 0;
             System.out.println("Guess:" + coord(pvar[0][1]) + coord(pvar[0][2]) + coord(pvar[0][3]));
             score = cur.pvs(-posVal[DONE6] + 1000, posVal[DONE6] - 1000, col, depth, 0, eval(col));
+
+            // This chunk must be run before actually playing the move, otherwise evalTwoSq will erase the move
+            Move combinedMove = evalTwoSq(col, pvar[0][0] >> 16, pvar[0][0] & 0xffff);
+            for (int i = 0; i < NUM_FEAT; i++) {
+                if (col == black) {
+                    runningFeatCountBlack[i] += combinedMove.featCountPlayer[i];
+                    runningFeatCountWhite[i] += combinedMove.featCountOpp[i];
+                } else {
+                    runningFeatCountWhite[i] += combinedMove.featCountPlayer[i];
+                    runningFeatCountBlack[i] += combinedMove.featCountOpp[i];
+                }
+
+                System.out.println(chainType[i] + ":" + runningFeatCountBlack[i] + "," + runningFeatCountWhite[i]);
+            }
+
             if (pvar[0][0] > 0) {
-                tryMove(pvar[0][0] >> 16, pvar[0][0] & 0xffff, 0);
-                tryMove(pvar[0][0] & 0xffff, pvar[0][0] >> 16, 0);
+                tryMove(pvar[0][0] >> 16, pvar[0][0] & 0xffff);
+                tryMove(pvar[0][0] & 0xffff, pvar[0][0] >> 16);
                 System.out.println("PV: " + pvString(0));
                 for (d = 1; d < depth + qDepth && pvar[0][d] != 0; d++) {
-                    tryMove(pvar[0][d] >> 16, pvar[0][d] & 0xffff, 0);
-                    tryMove(pvar[0][d] & 0xffff, pvar[0][d] >> 16, 0);
+                    tryMove(pvar[0][d] >> 16, pvar[0][d] & 0xffff);
+                    tryMove(pvar[0][d] & 0xffff, pvar[0][d] >> 16);
                 }
                 for (; d > 1; d--) {
                     takeBack(0);
@@ -971,7 +1007,8 @@ public class MeinCtrl {
             }
             long runTime = (System.currentTimeMillis() - time0);
             System.out.println(runTime + "ms.");
-            if (col==black) {timeBlack += runTime;} else {timeWhite += runTime;};
+            if (col==black) {timeBlack += runTime;} else {timeWhite += runTime;}
+
             return score;
         }
 
@@ -980,7 +1017,7 @@ public class MeinCtrl {
         public int pvs(int alpha, int beta, int col, int depth, int pv, int dScore) {
             int score, max = Integer.MIN_VALUE;
             // Select some number of moves
-            Move moves[] = new Move[depth > 0 ? selectionSize : selectionSize / 2];
+            Move[] moves = new Move[depth > 0 ? selectionSize : selectionSize / 2];
             int nMoves = select(col, moves, pv);
             boolean go = timeE != 0L;
 
@@ -997,27 +1034,27 @@ public class MeinCtrl {
                         defendCol = empty;
                     }
                     if (optionDefend && !deeper && -qDepth < newDepth) {
-//                        System.out.println("Possibly go deeper:" + moves[m].tval0 + "," + moves[m].tval1);
+//                        System.out.println("Possibly go deeper:" + moves[m].tval[0] + "," + moves[m].tval[1]);
                         // Quiescence search
                         // Color col is defending
-                        if (moves[m].tval1 <= -2 && col != -defendCol) {
+                        if (moves[m].tval[1] <= -2 && col != -defendCol) {
                             deeper = true;
                             if (defendCol == empty) {
                                 defendCol = col;
                             }
                             for (int i = 1; i < nMoves && go; i++) {
-                                if (moves[i].tval1 > -2) {
+                                if (moves[i].tval[1] > -2) {
                                     nMoves = i;
                                 }
                             }
-                        // Color col is attacking
-                        } else if (moves[m].tval0 >= 2 && col != defendCol) {
+                            // Color col is attacking
+                        } else if (moves[m].tval[0] >= 2 && col != defendCol) {
                             deeper = score < beta;
                             if (defendCol == empty) {
                                 defendCol = -col;
                             }
                             for (int i = 1; i < nMoves && go; i++) {
-                                if (moves[i].tval0 < 2) {
+                                if (moves[i].tval[0] < 2) {
                                     nMoves = i;
                                 }
                             }
@@ -1060,8 +1097,29 @@ public class MeinCtrl {
             return max;
         }
 
+        public Move evalTwoSq(int col, int sq1, int sq2) {
+            Move m1 = evalSq(col, sq1);
+            System.out.println((sq1 % bSize) + "," + (sq1 / bSize) + ":" + Arrays.toString(m1.featCountPlayer));
+            Move m2 = evalSq(col, sq2);
+            System.out.println((sq2 % bSize) + "," + (sq2 / bSize) + ":" + Arrays.toString(m1.featCountPlayer));
+            // TODO: Make it so we don't have to do this set and unset
+            setS(sq1, col);
+            Move combinedMove = m1.combineWithSecondStoneMove(m2, cur, col);
+            setS(sq1, empty);
+            System.out.println("Combined:" + Arrays.toString(combinedMove.featCountPlayer));
+            return combinedMove;
+        }
+
+        // Version without reusing buffer
+        public Move evalSq(int col, int sq) {
+            int[] tval = new int[3], pval = new int[4];
+            int[] featCountPlayer = new int[NUM_FEAT], featCountOpp = new int[NUM_FEAT];
+
+            return evalSq(col, sq, tval, pval, featCountPlayer, featCountOpp);
+        }
+
         @SuppressWarnings("empty-statement")
-        public void evalSq(int col, int sq, int tval[], int pval[]) {
+        public Move evalSq(int col, int sq, int[] tval, int[] pval, int[] featCountPlayer, int[] featCountOpp) {
             Slice slice = new Slice();
             int maxLen = 0;
             pval[0] = -dist[sq];
@@ -1072,6 +1130,8 @@ public class MeinCtrl {
             pval[3] = pval[2] = pval[1] = 0;
             // tval2: Maximum length of threat due to playing sq
             tval[0] = tval[1] = tval[2] = 0;
+            Arrays.fill(featCountPlayer, 0);
+            Arrays.fill(featCountOpp, 0);
             // Calculate values as a baseline without playing sq
             setS(sq, empty);
             for (int d = 0; d < updB.length; d++) {
@@ -1085,6 +1145,10 @@ public class MeinCtrl {
                 tval[1] -= slice.tval[1];
                 pval[0] -= slice.pval[0];
                 pval[1] -= slice.pval[1];
+                for (int i = 0; i < NUM_FEAT; i++) {
+                    featCountPlayer[i] -= slice.featCountPlayer[i];
+                    featCountOpp[i] -= slice.featCountOpp[i];
+                }
             }
             pval[2] = pval[1];
             pval[3] = pval[0];
@@ -1122,16 +1186,33 @@ public class MeinCtrl {
                 if (maxLen < slice.tval[2]) {
                     maxLen = slice.tval[2];
                 }
+                for (int i = 0; i < NUM_FEAT; i++) {
+                    featCountPlayer[i] += slice.featCountPlayer[i];
+                    featCountOpp[i] += slice.featCountOpp[i];
+                }
             }
             tval[2] = maxLen;
             setS(sq, empty);
+
+            // Calculate downstream variables
+            int pScore = pval[0] - pval[1]; // Change in color's score if color plays sq
+            int oScore = pval[2] - pval[3]; // Change in notColor's score if notColor plays sq
+            int score;
+            if (tval[2] >= 5) {
+                score = posVal[DONE6];	// select only winning squares
+            } else {
+                score = 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
+            }
+
+            return new Move(cur.moveNum / 2, sq, -1, score, pScore, oScore, tval, pval, featCountPlayer, featCountOpp);
         }
 
         // Evaluates score of performing a list of single stone moves
         // (WLog the first move is "closer" to main body than second)
         public void listEval(int colToMove) {
-            int score, oScore, pScore, minVal = -posVal[DONE6];
+            int minVal = -posVal[DONE6];
             int[] tval = new int[3], pval = new int[4];
+            int[] featCountPlayer = new int[NUM_FEAT], featCountOpp = new int[NUM_FEAT];
 
             listLen[1] = 0;
 
@@ -1142,16 +1223,12 @@ public class MeinCtrl {
                     continue;
                 }
 
-                evalSq(colToMove, sq, tval, pval);
-                pScore = pval[0] - pval[1]; // Change in color's score if color plays sq
-                oScore = pval[2] - pval[3]; // Change in notColor's score if notColor plays sq
-                if (tval[2] >= 5) {
-                    score = minVal = posVal[DONE6];	// select only winning squares
-                } else {
-                    score = 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
+                Move move = evalSq(colToMove, sq, tval, pval, featCountPlayer, featCountOpp);
+                if (move.tval[2] >= 5) {
+                    minVal = posVal[DONE6];	// select only winning squares
                 }
-                if (score >= minVal) {
-                    listMoves[listLen[1]++].set(moveNum / 2, sq, -1, score, oScore, pScore, tval);
+                if (move.score >= minVal) {
+                    listMoves[listLen[1]++] = move;
                 }
             }
             Arrays.sort(listMoves, 0, listLen[1]);
@@ -1200,53 +1277,34 @@ public class MeinCtrl {
         }
 
         // Mutate moves to become a list of candidate 2-stone moves
-        public int select(int colToMove, Move moves[], int pv) {
-            int[] tval = new int[3], pval = new int[4];
-            int score, oScore, pScore;
+        public int select(int colToMove, Move[] moves, int pv) {
             boolean won = false;
 
             listEval(colToMove);
             listLen[2] = 0;
             // Loop over square 1
             for (int n1 = 0; n1 < listLen[0] && !won; n1++) {
-                int sq2, sq1 = listMoves[n1].i1;
+                Move move1 = listMoves[n1];
+                int sq1 = move1.i1;
                 assert num[sq1] == empty: "First square wasn't empty when we tried to place";
+
+                // TODO: Make it so we don't have to do this set and unset
                 setS(sq1, colToMove);
 
                 // Loop over square 2
                 for (int n2 = n1 + 1; n2 < listLen[1] && !won; n2++) {
-                    sq2 = listMoves[n2].i1;
-                    if (listMoves[n1].score < posVal[DEAD4] && n1 + n1 > listLen[0] && !sameSlice(sq1, sq2)) {
+                    Move move2 = listMoves[n2];
+                    int sq2 = move2.i1;
+                    if (move1.score < posVal[DEAD4] && n1 + n1 > listLen[0] && !sameSlice(sq1, sq2)) {
                         continue;
                     }
-                    // Only evalSq when sameSlice, since otherwise there is no interaction between the two stones
-                    if (sameSlice(sq1, sq2)) {
-                        evalSq(colToMove, sq2, tval, pval);
-                        pScore = listMoves[n1].pScore + pval[0] - pval[1];
-                        oScore = listMoves[n1].oScore + pval[2] - pval[3];
-                    } else {
-                        pScore = listMoves[n1].pScore + listMoves[n2].pScore;
-                        oScore = listMoves[n1].oScore + listMoves[n2].oScore;
-                        tval[0] = listMoves[n2].tval0;
-                        tval[1] = listMoves[n2].tval1;
-                        tval[2] = listMoves[n2].tval2;
-                        pval[0] = pval[1] = pval[2] = pval[3] = Integer.MIN_VALUE;
-                    }
-                    if (tval[2] >= 6) {
-                        score = posVal[DONE6];
+
+                    Move combinedMove = move1.combineWithSecondStoneMove(move2, cur, colToMove);
+                    if (move2.tval[2] >= 6) {
                         won = true;
                         listLen[2] = 0;
-                    } else {
-                        if (listMoves[n1].tval0 == 0 && tval[0] > 0) {
-                            score = posVal[DEAD4];
-                        } else {
-                            score = 0;
-                        }
-                        tval[0] += listMoves[n1].tval0;
-                        tval[1] += listMoves[n1].tval1;
-                        score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
                     }
-                    seldMoves[listLen[2]++].set(cur.moveNum / 2, sq1, sq2, score, oScore, pScore, tval);
+                    seldMoves[listLen[2]++] = combinedMove;
                 }
 
                 setS(sq1, empty);	// Take back sq
@@ -1275,7 +1333,7 @@ public class MeinCtrl {
             }
             while (tgt_idx < len) {
                 // If move doesn't make a threat, consider it
-                if (seldMoves[src_idx].tval0 == 0) {
+                if (seldMoves[src_idx].tval[0] == 0) {
                     moves[tgt_idx] = (Move) seldMoves[src_idx].clone();
                     tgt_idx++;
                 }
@@ -1346,19 +1404,22 @@ public class MeinCtrl {
         int segStart, colFirst, colLast, segNext, segEnd, segLen;
         int segCol, segment;
         int[] tval = new int[3], pval = new int[2];
+        int[] featCountPlayer = new int[NUM_FEAT], featCountOpp = new int[NUM_FEAT];
 
         public void init(int len, int pl1, int pl2) {
             this.len = len;
             this.pl1 = pl1;
             this.pl2 = pl2;
             tval[0] = tval[1] = tval[2] = pval[0] = pval[1] = segNext = 0;
+            featCountPlayer = new int[NUM_FEAT];
+            featCountOpp = new int[NUM_FEAT];
         }
 
         @Override
         public String toString() {
             String bin = Integer.toBinaryString(segment);
             return "segment(" + segLen + "): " + segCol + " " + zeroes.substring(bin.length(), segLen) + bin + " " +
-                segStart + " " + colFirst + " " + segNext + " " + segEnd + " " + chainType[chType] + " v" + (pval[0] - pval[1]);
+                    segStart + " " + colFirst + " " + segNext + " " + segEnd + " " + chainType[chType] + " v" + (pval[0] - pval[1]);
         }
 
         void finishSegment() {
@@ -1387,12 +1448,14 @@ public class MeinCtrl {
                 if (segCol == 1) {			// Player to move
                     pval[0] += posVal[chType];	// Positional value
                     tval[0] += thrVal[chType];	// Number of threats player makes
+                    featCountPlayer[chType] += 1;
                     if (tval[2] < thrLen[chType]) {
                         tval[2] = thrLen[chType];	// Longest threat
                     }
                 } else {				// Opponent
                     pval[1] += posVal[chType];
                     tval[1] += thrVal[chType];	// Number of threats opponent makes
+                    featCountOpp[chType] += 1;
                 }
             }
         }
@@ -1466,9 +1529,9 @@ public class MeinCtrl {
                 try {
                     Calendar now = Calendar.getInstance();
                     FileWriter fw = new FileWriter("MeinStein_" +
-                        now.get(Calendar.YEAR) + "_" +
-                        (now.get(Calendar.MONTH) + 1) + "_" +
-                        now.get(Calendar.DAY_OF_MONTH) + fileExtension, true);
+                            now.get(Calendar.YEAR) + "_" +
+                            (now.get(Calendar.MONTH) + 1) + "_" +
+                            now.get(Calendar.DAY_OF_MONTH) + fileExtension, true);
                     fw.write(strBuf.toString(), 0, strBuf.length());
                     fw.close();
                     strBuf = new StringBuffer();

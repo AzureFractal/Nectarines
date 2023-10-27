@@ -20,7 +20,8 @@ import { RouterLink, RouterView } from 'vue-router'
   <div id="comms2" class="invis">Communication Channel For Best Moves</div>
   <div id="statusText" >Status Text</div>
   <div id="difficultyText" >Difficulty Text</div>
-  <div id="bestMoves" >Best Moves</div>
+  <div id="scoreText" >Score Text</div>
+  <div id="chainCount" >Chain Count</div>
 </template>
 
 <style scoped>
