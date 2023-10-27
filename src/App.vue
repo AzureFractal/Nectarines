@@ -19,6 +19,7 @@ import { RouterLink, RouterView } from 'vue-router'
   <div id="comms1">Communication Channel For Status</div>
   <div id="comms2" class="invis">Communication Channel For Best Moves</div>
   <div id="statusText" >Status Text</div>
+  <div id="difficultyText" >Difficulty Text</div>
   <div id="bestMoves" >Best Moves</div>
 </template>
 

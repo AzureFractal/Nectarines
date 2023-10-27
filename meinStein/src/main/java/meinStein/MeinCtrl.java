@@ -79,8 +79,6 @@ public class MeinCtrl {
     int depth1 = 2;
     int quiet0 = 3;
     int quiet1 = 3;
-    int selectionSize0 = 20;
-    int selectionSize1 = 20;
     int selectionSize = 20;
     long timeWhite = 0;
     long timeBlack = 0;
@@ -1502,12 +1500,10 @@ public class MeinCtrl {
             if (cur.moveNum / 2 % 2 == 0) {
                 strategy = 0;
                 posVal = posVal0;
-                selectionSize = selectionSize0;
                 score = cur.anaPlay(depth0, quiet0, OPT_DEFEND);	// Black
             } else {
                 strategy = 1;
                 posVal = posVal1;
-                selectionSize = selectionSize1;
                 score = cur.anaPlay(depth1, quiet1, OPT_DEFEND);	// White
             }
             displayEvaluationString(score);
