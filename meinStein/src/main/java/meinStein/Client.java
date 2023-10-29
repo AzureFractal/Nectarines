@@ -43,14 +43,14 @@ public class Client {
         }
         System.out.println("Depth qDepth:" + depth + "," + quietDepth);
         // Get computer moves and update buffer
-        int score = meinCtrl.cur.anaPlay(depth, quietDepth, MeinCtrl.OPT_DEFEND);
+        int score = meinCtrl.cur.anaPlay(depth, quietDepth);
         document.getElementById("comms").setInnerHTML(meinCtrl.curGame.getMovesEncoded());
         document.getElementById("comms1").setInnerHTML("Done");
         // For now we need a negative sign here because the score is for the AI
-        document.getElementById("scoreText").setInnerHTML("Score:" + (-score) + " (+ve is good 4 u u r happy and healthy)");
+        document.getElementById("scoreText").setInnerHTML("Score:" + (-score) + " (+ve is good 4 u u r happy and healthy) <br> Your win prob:" + Math.round((1.0 / (1.0+Math.exp(-0.001*-score)))*100)  + "%");
 
         String chainCountText = "";
-        for (int i = 0; i < NUM_FEAT; i++) {
+        for (int i = 1; i < NUM_FEAT; i++) {
             chainCountText += MeinCtrl.chainType[i] + ":";
             chainCountText += MeinCtrl.runningFeatCountBlack[i] + ",";
             chainCountText += MeinCtrl.runningFeatCountWhite[i] + "\n";

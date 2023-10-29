@@ -68,14 +68,13 @@ public class MeinCtrl {
     static final int[] posVal1 = {0, 100, 300, 400, 400, 400, 600, 1000, 1000, 1200, 1200, 2400, 2500, 2500, 1000000};
     static final int[] thrVal = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 10};
     static final int[] thrLen = {1, 2, 3, 2, 2, 2, 3, 3, 3, 4, 5, 4, 5, 5, 6};
-    static final int[] runningFeatCountWhite = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    static final int[] runningFeatCountBlack =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static int[] runningFeatCountWhite = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static int[] runningFeatCountBlack =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     static final int DEAD2 = 1,  DEAD3 = 2,  LIV2A = 3,  LIV2B = 4,  LIV2C = 5,  LV2D3 = 6,  LIV3A = 7,  LIV3B = 8,
             DEAD4 = 9,  DEAD5 = 10,  LIVE4 = 11,  LV4D5 = 12,  LIVE5 = 13,  DONE6 = 14;
     static final int NUM_FEAT = 15;
     static final int MAX_SEG_LENGTH = 15;
-    static final int OPT_DEFEND = 1;
-    static final int DISTANCE_PRUNING_THRESH = 4;
+    static final int DISTANCE_PRUNING_THRESH = 4; // 3 seems to be slightly better but I don't know why
     static final int ENGINE_DRAW_STONES = 140;
     static int moveInitiativePoints = 2100;
     public static int oScoreNumerator = 660;
@@ -133,9 +132,9 @@ public class MeinCtrl {
             int stone = cur.moveNum / 2 % 2 == 0 ? black : white;
             cur.setS(i2, stone);
         } else {				// second stone of a move
-            Move m;
             cur.setS(i1, empty);
-            curGame.add(m = new Move(cur.moveNum / 2, i1, i2));
+            Move m = cur.evalTwoSq(cur.moveNum / 2, i1, i2);
+            curGame.add(m);
             cur.makeMove(m);
         }
         return i2;
@@ -580,6 +579,7 @@ public class MeinCtrl {
 
             return new Move(this.ply, sq1, sq2, score, pScore, oScore, tval, pval, featCountPlayer, featCountOpp);
         }
+
         /**
          * Create algebraic notation for this move.
          *
@@ -650,7 +650,6 @@ public class MeinCtrl {
         int[] svar = new int[PV_SIZE];
         int qDepth = 0, moveNum, mir;
         private boolean select1[] = new boolean[bSquare];
-        boolean optionDefend = false;
 
         public Position() {
             for (int i = 0; i < listMoves.length; i++) {
@@ -818,17 +817,6 @@ public class MeinCtrl {
             return strBuf.toString() + "\n" + toBinary();
         }
 
-        public String[][] toStringArray() {
-            String[][] result = new String[bSize][bSize];
-            for (int i = 0; i < bSize; i++) {
-                for (int j = 0; j < bSize; j++) {
-                    result[i][j] = Integer.toString(num[i*bSize + j]);
-                }
-            }
-
-            return result;
-        }
-
         public String toStringEncoding() {
             StringBuilder result = new StringBuilder();
             for (int i = 0; i < bSize; i++) {
@@ -967,31 +955,16 @@ public class MeinCtrl {
             return pv + " (" + (-pvar[s][PV_SIZE]) + ")";
         }
 
-        public int anaPlay(int depth, int qd, int options) {
+        public int anaPlay(int depth, int qd) {
             int d, score, col = (moveNum / 2) % 2 == 0 ? black : white;
 
             qDepth = qd;
-            optionDefend = options == OPT_DEFEND;
             defendCol = empty;
             time0 = System.currentTimeMillis();
             timeE = time0 + cutOffTime;
             pvar[0][0] = 0;
             System.out.println("Guess:" + coord(pvar[0][1]) + coord(pvar[0][2]) + coord(pvar[0][3]));
-            score = cur.pvs(-posVal[DONE6] + 1000, posVal[DONE6] - 1000, col, depth, 0, eval(col));
-
-            // This chunk must be run before actually playing the move, otherwise evalTwoSq will erase the move
-            Move combinedMove = evalTwoSq(col, pvar[0][0] >> 16, pvar[0][0] & 0xffff);
-            for (int i = 0; i < NUM_FEAT; i++) {
-                if (col == black) {
-                    runningFeatCountBlack[i] += combinedMove.featCountPlayer[i];
-                    runningFeatCountWhite[i] += combinedMove.featCountOpp[i];
-                } else {
-                    runningFeatCountWhite[i] += combinedMove.featCountPlayer[i];
-                    runningFeatCountBlack[i] += combinedMove.featCountOpp[i];
-                }
-
-                System.out.println(chainType[i] + ":" + runningFeatCountBlack[i] + "," + runningFeatCountWhite[i]);
-            }
+            score = cur.pvs(-posVal[DONE6] + 1000, posVal[DONE6] - 1000, col, depth, 0, eval(col) + moveInitiativePoints / 2);
 
             if (pvar[0][0] > 0) {
                 tryMove(pvar[0][0] >> 16, pvar[0][0] & 0xffff);
@@ -1008,6 +981,12 @@ public class MeinCtrl {
             long runTime = (System.currentTimeMillis() - time0);
             System.out.println(runTime + "ms.");
             if (col==black) {timeBlack += runTime;} else {timeWhite += runTime;}
+
+            // Evaluate using eval
+            eval(col);
+            for (int i = 0; i < NUM_FEAT; i++) {
+                System.out.println(chainType[i] + ":" + runningFeatCountBlack[i] + "," + runningFeatCountWhite[i]);
+            }
 
             return score;
         }
@@ -1033,7 +1012,7 @@ public class MeinCtrl {
                     if (deeper) {
                         defendCol = empty;
                     }
-                    if (optionDefend && !deeper && -qDepth < newDepth) {
+                    if (!deeper && -qDepth < newDepth) {
 //                        System.out.println("Possibly go deeper:" + moves[m].tval[0] + "," + moves[m].tval[1]);
                         // Quiescence search
                         // Color col is defending
@@ -1099,9 +1078,9 @@ public class MeinCtrl {
 
         public Move evalTwoSq(int col, int sq1, int sq2) {
             Move m1 = evalSq(col, sq1);
-            System.out.println((sq1 % bSize) + "," + (sq1 / bSize) + ":" + Arrays.toString(m1.featCountPlayer));
+            System.out.println((sq1 % bSize) + "," + (sq1 / bSize) + ":" + Arrays.toString(m1.featCountPlayer) + ":" + Arrays.toString(m1.featCountOpp));
             Move m2 = evalSq(col, sq2);
-            System.out.println((sq2 % bSize) + "," + (sq2 / bSize) + ":" + Arrays.toString(m1.featCountPlayer));
+            System.out.println((sq2 % bSize) + "," + (sq2 / bSize) + ":" + Arrays.toString(m2.featCountPlayer) + ":" + Arrays.toString(m2.featCountOpp));
             // TODO: Make it so we don't have to do this set and unset
             setS(sq1, col);
             Move combinedMove = m1.combineWithSecondStoneMove(m2, cur, col);
@@ -1282,19 +1261,22 @@ public class MeinCtrl {
 
             listEval(colToMove);
             listLen[2] = 0;
+            int minTval1 = 0;
             // Loop over square 1
             for (int n1 = 0; n1 < listLen[0] && !won; n1++) {
                 Move move1 = listMoves[n1];
                 int sq1 = move1.i1;
                 assert num[sq1] == empty: "First square wasn't empty when we tried to place";
 
-                // TODO: Make it so we don't have to do this set and unset
                 setS(sq1, colToMove);
 
                 // Loop over square 2
                 for (int n2 = n1 + 1; n2 < listLen[1] && !won; n2++) {
                     Move move2 = listMoves[n2];
                     int sq2 = move2.i1;
+                    // This was in original MeinStein code
+                    // I think it means if we are exploring the second half of squares for n1, and the n1 square score
+                    // is kinda mid, and not the same slice, then continue
                     if (move1.score < posVal[DEAD4] && n1 + n1 > listLen[0] && !sameSlice(sq1, sq2)) {
                         continue;
                     }
@@ -1304,12 +1286,17 @@ public class MeinCtrl {
                         won = true;
                         listLen[2] = 0;
                     }
+                    minTval1 = Math.min(minTval1, combinedMove.tval[1]);
+                    if (combinedMove.tval[1] > minTval1) {
+                        continue;
+                    }
                     seldMoves[listLen[2]++] = combinedMove;
                 }
 
                 setS(sq1, empty);	// Take back sq
             }
-//            System.out.println("Num moves considered:" + listLen[2] + ", ll0:" + listLen[0] + ", ll1:" + listLen[1] + ", pv:" + pv);
+//            System.out.println("Num moves considered:" + minTval1 + "::" + ","
+//                    + listLen[2] + "/" + (listLen[0] * listLen[1]) + ", ll0:" + listLen[0] + ", ll1:" + listLen[1] + ", pv:" + pv);
             Arrays.sort(seldMoves, 0, listLen[2]);
 
             // Old logic Start:
@@ -1345,6 +1332,8 @@ public class MeinCtrl {
 
         @SuppressWarnings("empty-statement")
         public int eval(int colToMove) {
+            runningFeatCountBlack = new int[NUM_FEAT];
+            runningFeatCountWhite = new int[NUM_FEAT];
             int value = 0, sliceLen;
             Slice slice = new Slice();
             for (int d = 0; d < whi.length; d++) {
@@ -1387,6 +1376,17 @@ public class MeinCtrl {
                         System.out.println("eval: making six");
                     } else if (slice.tval[1] > 0) {
                         System.out.println("eval: have to resolve " + slice.tval[1] + " threats.");
+                    }
+
+                    // Update chain counts
+                    for (int i = 0; i < NUM_FEAT; i++) {
+                        if (colToMove == black) {
+                            runningFeatCountBlack[i] += slice.featCountPlayer[i];
+                            runningFeatCountWhite[i] += slice.featCountOpp[i];
+                        } else {
+                            runningFeatCountWhite[i] += slice.featCountPlayer[i];
+                            runningFeatCountBlack[i] += slice.featCountOpp[i];
+                        }
                     }
                 }
             }
@@ -1563,11 +1563,11 @@ public class MeinCtrl {
             if (cur.moveNum / 2 % 2 == 0) {
                 strategy = 0;
                 posVal = posVal0;
-                score = cur.anaPlay(depth0, quiet0, OPT_DEFEND);	// Black
+                score = cur.anaPlay(depth0, quiet0);	// Black
             } else {
                 strategy = 1;
                 posVal = posVal1;
-                score = cur.anaPlay(depth1, quiet1, OPT_DEFEND);	// White
+                score = cur.anaPlay(depth1, quiet1);	// White
             }
             displayEvaluationString(score);
             // If we found a forced win, don't show it and leave it as a puzzle
