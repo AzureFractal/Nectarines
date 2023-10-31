@@ -102,9 +102,9 @@ public class MeinCtrl {
     NumberFormat nf = NumberFormat.getInstance();
     Position cur = new Position();
     Game curGame = null;
-    int round = 1, defendCol = empty;
+    int round = 1;
     long time0, timeE;
-    byte[] table[] = new byte[MAX_SEG_LENGTH - 5][];
+    byte[][] table = new byte[MAX_SEG_LENGTH - 5][];
 
     public MeinCtrl() {
         nf.setMinimumIntegerDigits(2);
@@ -150,7 +150,7 @@ public class MeinCtrl {
     public void displayEvaluationString(int score) {
         String displayString = "";
         displayString += "GameEval " + ((cur.moveNum / 2 % 2 == 0) ? "White": "Black") + ":" + score;
-        displayString +=  "\n" + "BoardScore:" + curGame.getBoardScore() + "           (>0 favors white)";
+        displayString +=  "\n" + "BoardScore:" + cur.eval(white) + "           (>0 favors white)";
 
         String[] sorted = IntStream.range(0, moveInfoScores.length).boxed()
                 .sorted(Comparator.comparingInt(i -> -moveInfoScores[i]))
@@ -432,16 +432,6 @@ public class MeinCtrl {
             this.ply = ply;
         }
 
-        public int getBoardScore() {
-            int boardScore = 0;
-            for (int i = 0; i < ply; i++) {
-                if (move[i] != null) {
-                    boardScore += (i % 2 == 0 ? -1 : +1) * move[i].pScore;
-                }
-            }
-            return boardScore;
-        }
-
         String getPgn() {
             return getPgn("\n");
         }
@@ -571,8 +561,7 @@ public class MeinCtrl {
             if (move2.tval[2] >= 6) {
                 score = posVal[DONE6];
             } else {
-                score = 0;
-                score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
+                score = 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
             }
 
             return new Move(this.ply, sq1, sq2, score, pScore, oScore, tval, pval, featCountPlayer, featCountOpp);
@@ -957,7 +946,6 @@ public class MeinCtrl {
             int d, score, col = (moveNum / 2) % 2 == 0 ? black : white;
 
             qDepth = qd;
-            defendCol = empty;
             time0 = System.currentTimeMillis();
             timeE = time0 + cutOffTime;
             pvar[0][0] = 0;
@@ -997,6 +985,7 @@ public class MeinCtrl {
             Move[] moves = new Move[depth > 0 ? selectionSize : selectionSize / 2];
             int nMoves = select(col, moves, pv);
             boolean go = timeE != 0L;
+            final int newDepth = depth - 1;
 
             for (int m = 0; m < nMoves && go; m++) {
                 pvar[pv + 1][pv + 1] = 0;		// Remove old move
@@ -1004,36 +993,17 @@ public class MeinCtrl {
                     score = posVal[DONE6] - pv;	// making 6.
                     go = false;
                 } else {
-                    int newDepth = depth - 1;
                     boolean deeper = newDepth > 0;
                     score = dScore + moves[m].pScore - moveInitiativePoints;
-                    if (deeper) {
-                        defendCol = empty;
-                    }
+
                     if (!deeper && -qDepth < newDepth) {
                         // Quiescence search
-                        // Color col is defending. Filter for moves that remove at least 2 threats
-                        if (moves[m].tval[1] <= -2 && col != -defendCol) {
-                            deeper = true;
-                            if (defendCol == empty) {
-                                defendCol = col;
-                            }
-                            for (int i = 1; i < nMoves; i++) {
-                                if (moves[i].tval[1] > -2) {
-                                    nMoves = i;
-                                }
-                            }
-                        // Color col is attacking. Filter for moves create at least 2 threats
-                        } else if (moves[m].tval[0] >= 2 && col != defendCol) {
+                        // Attacking. Filter for moves create at least 2 threats
+                        if (moves[m].tval[0] >= 2) {
                             deeper = score < beta;
-                            if (defendCol == empty) {
-                                defendCol = -col;
-                            }
-                            for (int i = 1; i < nMoves; i++) {
-                                if (moves[i].tval[0] < 2) {
-                                    nMoves = i;
-                                }
-                            }
+                        // Defending. Filter for moves that remove at least 2 threats
+                        } else if (moves[m].tval[1] <= -2) {
+                            deeper = true;
                         }
                     }
                     if (deeper) {
@@ -1041,9 +1011,6 @@ public class MeinCtrl {
                         makeMove(moves[m]);
                         score = -pvs(-beta, -Math.max(max, alpha), -col, newDepth, pv + 1, -score);
                         unMakeMove(moves[m]);
-                    } else {
-                        // Final ply already sorted by move quality, so we can stop after analyzing first move
-                        go = false;
                     }
                 }
                 if (pv == 0) {
@@ -1228,6 +1195,11 @@ public class MeinCtrl {
                 }
             }
             listLen[0] = Math.min(listLen[1], listLen[0] + (minVal == posVal[DONE6] ? 0 : 4));
+
+            // To make things faster only consider the some of the best stone positions
+            listLen[0] = Math.min(listLen[0], (int) (1.8 * selectionSize));
+            listLen[1] = Math.min(listLen[1], (int) (1.8 * selectionSize));
+
             for (int s = 0; s < listLen[0]; s++) {
                 select1[listMoves[s].i1] = true;
             }
