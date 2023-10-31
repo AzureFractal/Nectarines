@@ -73,6 +73,7 @@ public class MeinCtrl {
     static final int DEAD2 = 1,  DEAD3 = 2,  LIV2A = 3,  LIV2B = 4,  LIV2C = 5,  LV2D3 = 6,  LIV3A = 7,  LIV3B = 8,
             DEAD4 = 9,  DEAD5 = 10,  LIVE4 = 11,  LV4D5 = 12,  LIVE5 = 13,  DONE6 = 14;
     static final int NUM_FEAT = 15;
+    static final boolean ENABLE_FEAT_COUNT = false;
     static final int MAX_SEG_LENGTH = 15;
     static final int DISTANCE_PRUNING_THRESH = 4; // 3 seems to be slightly better but I don't know why
     static final int ENGINE_DRAW_STONES = 140;
@@ -97,7 +98,6 @@ public class MeinCtrl {
 
     Random rnd = new Random();
 
-    int setupStone = 0;
     int highFR = -1, highTO = -1;
     NumberFormat nf = NumberFormat.getInstance();
     Position cur = new Position();
@@ -561,19 +561,17 @@ public class MeinCtrl {
             pval[2] = this.pval[2] + move2.pval[2];
             pval[3] = this.pval[3] + move2.pval[3];
 
-            for (int i = 0; i < NUM_FEAT; i++) {
-                featCountPlayer[i] = this.featCountPlayer[i] + move2.featCountPlayer[i];
-                featCountOpp[i] = this.featCountOpp[i] + move2.featCountOpp[i];
+            if (ENABLE_FEAT_COUNT) {
+                for (int i = 0; i < NUM_FEAT; i++) {
+                    featCountPlayer[i] = this.featCountPlayer[i] + move2.featCountPlayer[i];
+                    featCountOpp[i] = this.featCountOpp[i] + move2.featCountOpp[i];
+                }
             }
 
             if (move2.tval[2] >= 6) {
                 score = posVal[DONE6];
             } else {
-                if (this.tval[0] == 0 && move2.tval[0] > 0) {
-                    score = posVal[DEAD4];
-                } else {
-                    score = 0;
-                }
+                score = 0;
                 score += 10000 * tval[0] - 100000 * tval[1] + pScore + oScore * oScoreNumerator / 1000;
             }
 
@@ -1013,26 +1011,25 @@ public class MeinCtrl {
                         defendCol = empty;
                     }
                     if (!deeper && -qDepth < newDepth) {
-//                        System.out.println("Possibly go deeper:" + moves[m].tval[0] + "," + moves[m].tval[1]);
                         // Quiescence search
-                        // Color col is defending
+                        // Color col is defending. Filter for moves that remove at least 2 threats
                         if (moves[m].tval[1] <= -2 && col != -defendCol) {
                             deeper = true;
                             if (defendCol == empty) {
                                 defendCol = col;
                             }
-                            for (int i = 1; i < nMoves && go; i++) {
+                            for (int i = 1; i < nMoves; i++) {
                                 if (moves[i].tval[1] > -2) {
                                     nMoves = i;
                                 }
                             }
-                            // Color col is attacking
+                        // Color col is attacking. Filter for moves create at least 2 threats
                         } else if (moves[m].tval[0] >= 2 && col != defendCol) {
                             deeper = score < beta;
                             if (defendCol == empty) {
                                 defendCol = -col;
                             }
-                            for (int i = 1; i < nMoves && go; i++) {
+                            for (int i = 1; i < nMoves; i++) {
                                 if (moves[i].tval[0] < 2) {
                                     nMoves = i;
                                 }
@@ -1054,7 +1051,7 @@ public class MeinCtrl {
                     moveInfoScores[m] = score;
                     System.out.println(m + ": " + alpha + "," + beta + " " + moves[m].score + " " + moves[m] + pvString(1));
                 }
-                if (max < score && timeE != 0L) {
+                if (score > max && timeE != 0L) {
                     if (pv == 0) {
                         System.out.println(m + "=========================================================");
                     }
@@ -1064,7 +1061,6 @@ public class MeinCtrl {
                     pvar[pv + 1][pv + 1] = 0;		// Remove old move
                     // Beta cutoff
                     if (beta <= score) {
-//                        System.out.print("[" + m + "/" + moves.length + "]");
                         return score;
                     }
                 }
@@ -1109,8 +1105,10 @@ public class MeinCtrl {
             pval[3] = pval[2] = pval[1] = 0;
             // tval2: Maximum length of threat due to playing sq
             tval[0] = tval[1] = tval[2] = 0;
-            Arrays.fill(featCountPlayer, 0);
-            Arrays.fill(featCountOpp, 0);
+            if (ENABLE_FEAT_COUNT) {
+                Arrays.fill(featCountPlayer, 0);
+                Arrays.fill(featCountOpp, 0);
+            }
             // Calculate values as a baseline without playing sq
             setS(sq, empty);
             for (int d = 0; d < updB.length; d++) {
@@ -1124,9 +1122,11 @@ public class MeinCtrl {
                 tval[1] -= slice.tval[1];
                 pval[0] -= slice.pval[0];
                 pval[1] -= slice.pval[1];
-                for (int i = 0; i < NUM_FEAT; i++) {
-                    featCountPlayer[i] -= slice.featCountPlayer[i];
-                    featCountOpp[i] -= slice.featCountOpp[i];
+                if (ENABLE_FEAT_COUNT) {
+                    for (int i = 0; i < NUM_FEAT; i++) {
+                        featCountPlayer[i] -= slice.featCountPlayer[i];
+                        featCountOpp[i] -= slice.featCountOpp[i];
+                    }
                 }
             }
             pval[2] = pval[1];
@@ -1165,9 +1165,11 @@ public class MeinCtrl {
                 if (maxLen < slice.tval[2]) {
                     maxLen = slice.tval[2];
                 }
-                for (int i = 0; i < NUM_FEAT; i++) {
-                    featCountPlayer[i] += slice.featCountPlayer[i];
-                    featCountOpp[i] += slice.featCountOpp[i];
+                if (ENABLE_FEAT_COUNT) {
+                    for (int i = 0; i < NUM_FEAT; i++) {
+                        featCountPlayer[i] += slice.featCountPlayer[i];
+                        featCountOpp[i] += slice.featCountOpp[i];
+                    }
                 }
             }
             tval[2] = maxLen;
@@ -1187,7 +1189,6 @@ public class MeinCtrl {
         }
 
         // Evaluates score of performing a list of single stone moves
-        // (WLog the first move is "closer" to main body than second)
         public void listEval(int colToMove) {
             int minVal = -posVal[DONE6];
             int[] tval = new int[3], pval = new int[4];
