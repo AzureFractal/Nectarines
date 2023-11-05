@@ -25,8 +25,6 @@
 package meinStein;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -96,10 +94,7 @@ public class MeinCtrl {
     String[] moveInfoStrings = new String[100];
     int[] moveInfoScores = new int[100];
 
-    Random rnd = new Random();
-
     int highFR = -1, highTO = -1;
-    NumberFormat nf = NumberFormat.getInstance();
     Position cur = new Position();
     Game curGame = null;
     int round = 1;
@@ -107,9 +102,6 @@ public class MeinCtrl {
     byte[][] table = new byte[MAX_SEG_LENGTH - 5][];
 
     public MeinCtrl() {
-        nf.setMinimumIntegerDigits(2);
-        nf.setMaximumFractionDigits(1);
-
         tableGen();
         resetBoard();
     }
@@ -124,20 +116,15 @@ public class MeinCtrl {
      * 5                        2                           3
      */
     public int tryMove(int i1, int i2) {
-        if (cur.num[i2] > 0) // occupied
-        {
+        // If move is invalid, do nothing.
+        if (cur.num[i1] > 0 || cur.num[i2] > 0 || i1==i2) {
             return -1;
         }
-        if (cur.moveNum % 2 == 0) {	// first stone of a move
-            int stone = cur.moveNum / 2 % 2 == 0 ? black : white;
-            cur.setS(i2, stone);
-        } else {				// second stone of a move
-            cur.setS(i1, empty);
-            Move m = cur.evalTwoSq(cur.moveNum / 2, i1, i2);
-            curGame.add(m);
-            cur.makeMove(m);
-        }
-        return i2;
+        Move m = cur.evalTwoSq(cur.moveNum / 2, i1, i2);
+        curGame.add(m);
+        cur.makeMove(m);
+
+        return 0;
     }
 
     public void resetEvaluationString() {
@@ -636,7 +623,7 @@ public class MeinCtrl {
         int[][] pvar = new int[PV_SIZE][PV_SIZE + 1];
         int[] svar = new int[PV_SIZE];
         int qDepth = 0, moveNum, mir;
-        private boolean select1[] = new boolean[bSquare];
+        private boolean[] select1 = new boolean[bSquare];
 
         public Position() {
             for (int i = 0; i < listMoves.length; i++) {
@@ -954,11 +941,11 @@ public class MeinCtrl {
 
             if (pvar[0][0] > 0) {
                 tryMove(pvar[0][0] >> 16, pvar[0][0] & 0xffff);
-                tryMove(pvar[0][0] & 0xffff, pvar[0][0] >> 16);
+//                tryMove(pvar[0][0] & 0xffff, pvar[0][0] >> 16);
                 System.out.println("PV: " + pvString(0));
                 for (d = 1; d < depth + qDepth && pvar[0][d] != 0; d++) {
                     tryMove(pvar[0][d] >> 16, pvar[0][d] & 0xffff);
-                    tryMove(pvar[0][d] & 0xffff, pvar[0][d] >> 16);
+//                    tryMove(pvar[0][d] & 0xffff, pvar[0][d] >> 16);
                 }
                 for (; d > 1; d--) {
                     takeBack(0);

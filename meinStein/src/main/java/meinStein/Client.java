@@ -38,7 +38,6 @@ public class Client {
                 }
 
                 meinCtrl.tryMove(stone1, stone2);
-                meinCtrl.tryMove(stone2, stone1);
             }
         }
         System.out.println("Depth qDepth:" + depth + "," + quietDepth);
