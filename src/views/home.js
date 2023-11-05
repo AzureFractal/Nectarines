@@ -27,6 +27,9 @@ export default {
     }
   },
   created () {
+    const boardLengthToBeRefactored = 19;
+
+
     console.log("Initializing for the first time by adding the MutationObserver");
     const outerThis = this;
 
@@ -39,11 +42,13 @@ export default {
     // Callback function to execute when changes are detected
     const callback = function(mutationsList, observer) {
       const commsLengthPerEntry = 7;
-      const boardLengthToBeRefactored = 19;
       const element = document.getElementById("comms").innerText;
       console.log("Hi I read the comms of length", element.length);
 
-      outerThis.steps = [];
+      // Have to do this because steps is read-only
+      while (outerThis.steps.length>0) {
+        outerThis.steps.pop();
+      }
       outerThis.$store.dispatch("RESET_BOARD");
 
       for (let i = 0; i < element.length / commsLengthPerEntry; i++) {
@@ -62,6 +67,33 @@ export default {
     // Create Mutation Observer, and observe
     const observer = new MutationObserver(callback);
     observer.observe(targetElement, config);
+
+
+
+    // Callback function to execute when changes are detected
+    const callbackHint = function(mutationsList, observer) {
+      const element = document.getElementById("commsHint").innerText;
+      const hintMoveArray = element.split(",");
+
+      // Have to do this because hints is read-only
+      while (outerThis.hints.length>0) {
+        outerThis.hints.pop();
+      }
+
+      if (element !== "") {
+        for (let i = 0; i < hintMoveArray.length; i++) {
+          const entryPosition = parseInt(hintMoveArray[i], 10);
+          const entryRole = parseInt("1", 10);
+          const x = Math.floor(entryPosition / boardLengthToBeRefactored);
+          const y = entryPosition % boardLengthToBeRefactored;
+          outerThis.hints.push({x, y, entryRole});
+        }
+      }
+    };
+
+    // Create Mutation Observer, and observe
+    const observerHint = new MutationObserver(callbackHint);
+    observerHint.observe(document.getElementById('commsHint'), config);
   },
   components: {
     Board,
@@ -71,6 +103,7 @@ export default {
       board: state => state.board.board,
       steps: state => state.board.steps,
       stepsTail: state => state.board.stepsTail,
+      hints: state => state.board.hints,
       status: state => state.home.status,
       current_player: state => state.home.current_player,
       first: state => state.home.first,
@@ -157,7 +190,7 @@ export default {
       const x = position[0]
       const y = position[1]
       if(this.board[x][y] !== 0) {
-        throw new Error("NOT_EMPTY")
+        throw new Error("NOT_EMPTY:" + x + "," + y + "," + this.board[x][y])
       }
       
       this._set(position, this.current_player)

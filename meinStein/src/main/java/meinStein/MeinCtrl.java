@@ -615,8 +615,9 @@ public class MeinCtrl {
     class Position {
         final int PV_SIZE = 50;
         Move[] listMoves = new Move[bSquare], seldMoves = new Move[bSquare * bSquare / 2];
+        int[] listLen = new int[3];
         int[][] bla = new int[6][bSize], whi = new int[6][bSize];		//   | - / / \ \
-        int[] lenS = new int[4], updB = new int[4], updW = new int[4], listLen = new int[3];
+        int[] lenS = new int[4], updB = new int[4], updW = new int[4];
         int[] num = new int[bSquare];
         // pvar[s][k] contains principal variation of candidate s at the k step
         // The pvar[s][PV_SIZE] entry contains the score of the move
@@ -929,8 +930,12 @@ public class MeinCtrl {
             return pv + " (" + (-pvar[s][PV_SIZE]) + ")";
         }
 
+        public int getColToMove() {
+            return (moveNum / 2) % 2 == 0 ? black : white;
+        }
+
         public int anaPlay(int depth, int qd) {
-            int d, score, col = (moveNum / 2) % 2 == 0 ? black : white;
+            int d, score, col = getColToMove();
 
             qDepth = qd;
             time0 = System.currentTimeMillis();

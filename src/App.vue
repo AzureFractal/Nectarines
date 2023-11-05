@@ -15,13 +15,17 @@ import { RouterLink, RouterView } from 'vue-router'
   </header>
 
   <RouterView />
-  <div id="comms" class="invis">CommunicationChannel</div>
-  <div id="comms1">Communication Channel For Status</div>
-  <div id="comms2" class="invis">Communication Channel For Best Moves</div>
+  <!--  Actual text-->
   <div id="statusText" >Status Text</div>
   <div id="difficultyText" >Difficulty Text</div>
   <div id="scoreText" >Score Text</div>
-  <div id="chainCount" >Chain Count</div>
+  <div id="chainCount" class="invis">Chain Count</div>
+
+  <!--  Communication channels-->
+  <div id="comms" class="invis">CommunicationChannel</div>
+  <div id="comms1">Communication Channel For Status</div>
+  <div id="comms2" class="invis">Communication Channel For Best Moves</div>
+  <div id="commsHint" class="invis"></div>
 </template>
 
 <style scoped>

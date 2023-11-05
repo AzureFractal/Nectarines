@@ -74,6 +74,7 @@ public class Client {
         } else if (score == MeinCtrl.posVal[MeinCtrl.DONE6]) {
             document.getElementById("comms1").setInnerHTML("White Won!");
         }
+        document.getElementById("commsHint").setInnerHTML("");
 
         return score;
     }
@@ -100,6 +101,19 @@ public class Client {
             for (int i = 0; i < 20; i++) {
                 readCommsAndPlayMove(document);
             }
+        });
+
+        HTMLElement hintElem = document.getElementById("hint");
+        hintElem.addEventListener("click", (e)->{
+            meinCtrl.cur.listEval(meinCtrl.cur.getColToMove());
+            String result = "";
+            for (int i = 0; i < meinCtrl.cur.listLen[1]; i++) {
+                if (i != 0) {
+                    result += ",";
+                }
+                result += meinCtrl.cur.listMoves[i].i1;
+            }
+            document.getElementById("commsHint").setInnerHTML(result);
         });
 
         HTMLElement elem;

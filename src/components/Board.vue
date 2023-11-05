@@ -29,6 +29,17 @@
           </div>
         </div>
       </div>
+      <div v-for="(s, index) in hints" :key="index">
+        <div
+                :class="'hint ' + (s.entryRole === 1 ? 'black' : 'white')"
+                :style="{
+        marginTop: (0.94 + s.x*5.210) + '%',
+        marginLeft: (0.94 + s.y*5.210) + '%',
+        opacity:0.3*(1-index/20.0)+0.1,
+        }">
+          {{}}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -41,6 +52,7 @@ export default {
     ...mapState({
       board: state => state.board.board,
       steps: state => state.board.steps,
+      hints: state => state.board.hints,
       showSteps: state => state.home.showSteps,
       first: state => state.home.first,
       fives: state => state.board.fives
@@ -51,10 +63,11 @@ export default {
       let y = e.offsetX,
           x = e.offsetY,
           width = this.$refs.board.clientWidth,
-          offset = width*0.032, // Old 0.044
-          step = width*0.0515; // Old 0.065
+          offset = width*0.046, // Old 0.032
+          step = width*0.0520; // Old 0.0515
       x = Math.floor((x+offset)/step) - 1
       y = Math.floor((y+offset)/step) - 1
+      console.log(x, y, e.offsetX, e.offsetY);
       this.$emit('set', [x, y])
     },
     clickChessman (e) {
@@ -73,7 +86,7 @@ export default {
   background-image: url("../assets/board19.png");
   background-size: 100%;
 }
-.chessman, .step {
+.chessman, .step, .hint {
   position: absolute;
   width: 1.85rem;
   height: 1.85rem;
@@ -98,6 +111,17 @@ export default {
   &.white {
     color: black;
   }
+}
+
+.hint {
+  /*background-color: white;*/
+  /*&.white {*/
+  /*  background-color: black;*/
+  /*}*/
+  /*animation: pulse 2.0s infinite;*/
+  background-color: #00e2ff;
+  opacity: 0.2;
+  pointer-events: none;
 }
 
 .first-2 {
