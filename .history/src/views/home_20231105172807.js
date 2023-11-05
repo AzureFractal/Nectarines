@@ -29,7 +29,7 @@ export default {
   created() {
     console.log('Initializing for the first time by adding the MutationObserver')
     const outerThis = this
-    this.$store.dispatch(SET_STATUS, STATUS.PLAYING)
+    this.$store.dispatch(SET_STATUS, STATUS.READY)
 
     // Select the element by its ID ("comms")
     const targetElement = document.getElementById('comms')

@@ -13,8 +13,6 @@ import {
   SET_FIRST,
 } from '@/store/mutations'
 
-import * as STATUS from '@/status.js'
-
 export default {
   name: 'home',
   data() {
@@ -29,7 +27,6 @@ export default {
   created() {
     console.log('Initializing for the first time by adding the MutationObserver')
     const outerThis = this
-    this.$store.dispatch(SET_STATUS, STATUS.PLAYING)
 
     // Select the element by its ID ("comms")
     const targetElement = document.getElementById('comms')
@@ -70,14 +67,18 @@ export default {
   computed: {
     statusText() {
       if (this.status === STATUS.LOADING) {
-        return "Loading..."
+        return this.$t('status.loading')
       } else if (this.status === STATUS.READY) {
-        return "Ready"
+        return this.$t('status.start')
       } else if (this.status === STATUS.THINKING) {
-        return "Thinking.."
+        return this.$t('status.thinking')
       } else if (this.status === STATUS.PLAYING) {
-        return "Playing"
-      } else return 'Loading...'
+        return this.$t('status.playing', {
+          score: this.score,
+          step: this.step,
+          time: ((new Date() - this.startTime) / 1000).toFixed(2)
+        })
+      } else return this.$t('status.loading')
     },
     ...mapState({
       board: (state) => state.board.board,

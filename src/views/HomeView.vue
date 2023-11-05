@@ -8,7 +8,7 @@ import Controls from '../components/Controls.vue'
   <div class="home">
     <Board @set="set"></Board>
  <div class="status">
-      <div class="status-inner"><div :class="'chessman '+(first === 1 ? 'black' : 'white')"></div> {{statusText}}</div>
+      <div class="status-inner"><div :class="'chessman '+(getCurPlayer(steps.length) ? 'white' : 'black')"></div> {{statusText}}</div>
     </div>
     <Controls />
      </div>

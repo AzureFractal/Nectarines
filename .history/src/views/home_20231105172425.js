@@ -13,8 +13,6 @@ import {
   SET_FIRST,
 } from '@/store/mutations'
 
-import * as STATUS from '@/status.js'
-
 export default {
   name: 'home',
   data() {
@@ -29,7 +27,6 @@ export default {
   created() {
     console.log('Initializing for the first time by adding the MutationObserver')
     const outerThis = this
-    this.$store.dispatch(SET_STATUS, STATUS.PLAYING)
 
     // Select the element by its ID ("comms")
     const targetElement = document.getElementById('comms')
@@ -67,7 +64,6 @@ export default {
   components: {
     Board
   },
-  computed: {
     statusText() {
       if (this.status === STATUS.LOADING) {
         return "Loading..."

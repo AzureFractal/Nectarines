@@ -11,9 +11,8 @@ import {
   FORWARD,
   BACKWARD,
   SET_FIRST,
+  SET_FIVES
 } from '@/store/mutations'
-
-import * as STATUS from '@/status.js'
 
 export default {
   name: 'home',
@@ -29,7 +28,6 @@ export default {
   created() {
     console.log('Initializing for the first time by adding the MutationObserver')
     const outerThis = this
-    this.$store.dispatch(SET_STATUS, STATUS.PLAYING)
 
     // Select the element by its ID ("comms")
     const targetElement = document.getElementById('comms')

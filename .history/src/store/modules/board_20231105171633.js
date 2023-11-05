@@ -47,6 +47,7 @@ const state = {
   ],
   stepsTail: [
   ],
+  fives: []
 }
 
 const getters = {
