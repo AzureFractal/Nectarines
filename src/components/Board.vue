@@ -1,37 +1,33 @@
 <template>
-  <div :class="'board first-' + first ">
-    <div
-      @click="click"
-      ref="board"
-      class="board-inner">
+  <div :class="'board first-' + first">
+    <div @click="click" ref="board" class="board-inner">
       <div>
         <div v-for="(row, rowIndex) in board" :key="rowIndex">
-          <div
-            v-for="(c, cIndex) in row">
+          <div v-for="(c, cIndex) in row" :key="cIndex">
             <h3
-            v-if="!!c"
-            :key="cIndex"
-            @click="clickChessman"
-            :class="'chessman ' + (c === 1 ? 'black ' : 'white ')"
-            :style="{
+                    v-if="!!c"
+                    @click="clickChessman"
+                    :class="'chessman ' + (c === 1 ? 'black' : 'white')"
+                    :style="{
               marginTop: (0.94 + rowIndex*5.210) + '%',
               marginLeft: (0.94 + cIndex*5.210) + '%',
-              }">
-              </h3>
+              }"
+            ></h3>
           </div>
         </div>
       </div>
-      <div
-        v-if="showSteps"
-        v-for="(s, index) in steps"
-        :key="index"
-        @click="clickChessman"
-        :class="'step ' + (s.role === 1 ? 'black' : 'white')"
-        :style="{
+      <div v-if="showSteps">
+        <div v-for="(s, index) in steps" :key="index">
+          <div
+                  @click="clickChessman"
+                  :class="'step ' + (s.role === 1 ? 'black' : 'white')"
+                  :style="{
           marginTop: (0.94-0.07 + s.position[0]*5.210) + '%',
           marginLeft: (0.94 + s.position[1]*5.210) + '%'
           }">
-          {{Math.floor((index-1)/2)+2}}
+            {{ Math.floor((index - 1) / 2) + 2 }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
