@@ -1,6 +1,6 @@
 // config
 export const SET_LANG = 'SET_LANG'
-export const SET_SHOW_STEPS = "SET_SHOW_STEPS"
+export const SET_SHOW_STEPS = 'SET_SHOW_STEPS'
 
 export const SET_STATUS = 'SET_STATUS'
 export const SET_FIRST = 'SET_FIRST'

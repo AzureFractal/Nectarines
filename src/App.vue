@@ -5,12 +5,10 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
     <div class="wrapper">
-        <div class="greetings">
-    <h1 class="green">{{ "Nectarines" }}</h1>
-    <h3>
-      Play Connect Six!
-    </h3>
-  </div>
+      <div class="greetings">
+        <h1 class="green">{{ 'Nectarines' }}</h1>
+        <h3>Play Connect Six!</h3>
+      </div>
     </div>
   </header>
 
@@ -18,10 +16,10 @@ import { RouterLink, RouterView } from 'vue-router'
   <div id="comms" class="invis">CommunicationChannel</div>
   <div id="comms1">Communication Channel For Status</div>
   <div id="comms2" class="invis">Communication Channel For Best Moves</div>
-  <div id="statusText" >Status Text</div>
-  <div id="difficultyText" >Difficulty Text</div>
-  <div id="scoreText" >Score Text</div>
-  <div id="chainCount" >Chain Count</div>
+  <div id="statusText">Status Text</div>
+  <div id="difficultyText">Difficulty Text</div>
+  <div id="scoreText">Score Text</div>
+  <div id="chainCount">Chain Count</div>
 </template>
 
 <style scoped>
@@ -91,7 +89,7 @@ h3 {
   header {
     display: flex;
     margin: auto;
-    text-align: center
+    text-align: center;
   }
 
   .logo {

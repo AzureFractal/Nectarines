@@ -1,11 +1,6 @@
-import {
-  ADD_CHESSMAN,
-  RESET_BOARD,
-  BACKWARD,
-  FORWARD,
-} from '../mutations.js'
+import { ADD_CHESSMAN, RESET_BOARD, BACKWARD, FORWARD } from '../mutations.js'
 
-const getBoard = function (){
+const getBoard = function () {
   return [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -43,22 +38,21 @@ const state = {
       role: 1
     }*/
   ],
-  stepsTail: [
-  ],
+  stepsTail: []
 }
 
 const getters = {
-  board: state => state.board,
-  steps: state => state.steps,
-  stepsTail: state => state.stepsTail,
+  board: (state) => state.board,
+  steps: (state) => state.steps,
+  stepsTail: (state) => state.stepsTail
 }
 
 const mutations = {
-  [RESET_BOARD] (state) {
+  [RESET_BOARD](state) {
     state.board = getBoard()
     state.steps = []
   },
-  [ADD_CHESSMAN] (state, {position, role}) {
+  [ADD_CHESSMAN](state, { position, role }) {
     let newBoard = copy(state.board)
     newBoard[position[0]][position[1]] = role
     state.board = newBoard
@@ -69,11 +63,11 @@ const mutations = {
     state.steps.push(step)
     state.stepsTail = [] //
   },
-  [BACKWARD] (state, steps) {
+  [BACKWARD](state, steps) {
     if (state.steps.length < 2) return false
     steps = steps || 2
     let i = 0
-    while (i<steps) {
+    while (i < steps) {
       const s = state.steps.pop()
       state.stepsTail.push(s)
       const p = s.position
@@ -81,11 +75,11 @@ const mutations = {
       i++
     }
   },
-  [FORWARD] (state, steps) {
+  [FORWARD](state, steps) {
     if (state.stepsTail.length < 2) return false
     steps = steps || 2
     let i = 0
-    while (i<steps) {
+    while (i < steps) {
       const s = state.stepsTail.pop()
       state.steps.push(s)
       const p = s.position
@@ -96,18 +90,18 @@ const mutations = {
 }
 
 const actions = {
-  [RESET_BOARD] ({commit}) {
+  [RESET_BOARD]({ commit }) {
     commit(RESET_BOARD)
   },
-  [ADD_CHESSMAN] ({commit}, c) {
+  [ADD_CHESSMAN]({ commit }, c) {
     commit(ADD_CHESSMAN, c)
   },
-  [BACKWARD] ({commit}, c) {
+  [BACKWARD]({ commit }, c) {
     commit(BACKWARD, c)
   },
-  [FORWARD] ({commit}, c) {
+  [FORWARD]({ commit }, c) {
     commit(FORWARD, c)
-  },
+  }
 }
 
 export default {

@@ -8,7 +8,7 @@ import {
   RESET_BOARD,
   FORWARD,
   BACKWARD,
-  SET_FIRST,
+  SET_FIRST
 } from '@/store/mutations'
 
 import * as STATUS from '@/status.js'
@@ -201,7 +201,7 @@ export default {
       this.$store.commit(SET_STATUS, STATUS.PLAYING)
     },
     _sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      return new Promise((resolve) => setTimeout(resolve, ms))
     },
     callInner(innerBtnId) {
       this.$store.commit(SET_STATUS, STATUS.THINKING)
