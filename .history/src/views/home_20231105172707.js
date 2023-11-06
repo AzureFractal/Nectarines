@@ -26,13 +26,9 @@ export default {
       startTime: +new Date()
     }
   },
-  
-  created () {
-    const boardLengthToBeRefactored = 19;
-
-    console.log("Initializing for the first time by adding the MutationObserver");
-    const outerThis = this;
-    this.$store.dispatch(SET_STATUS, STATUS.PLAYING)
+  created() {
+    console.log('Initializing for the first time by adding the MutationObserver')
+    const outerThis = this
 
     // Select the element by its ID ("comms")
     const targetElement = document.getElementById('comms')
@@ -41,16 +37,14 @@ export default {
     const config = { attributes: true, childList: true, subtree: true }
 
     // Callback function to execute when changes are detected
-    const callback = function(mutationsList, observer) {
-      const commsLengthPerEntry = 7;
-      const element = document.getElementById("comms").innerText;
-      console.log("Hi I read the comms of length", element.length);
+    const callback = function (mutationsList, observer) {
+      const commsLengthPerEntry = 7
+      const boardLengthToBeRefactored = 19
+      const element = document.getElementById('comms').innerText
+      console.log('Hi I read the comms of length', element.length)
 
-      // Have to do this because steps is read-only
-      while (outerThis.steps.length>0) {
-        outerThis.steps.pop();
-      }
-      outerThis.$store.dispatch("RESET_BOARD");
+      outerThis.steps = []
+      outerThis.$store.dispatch('RESET_BOARD')
 
       for (let i = 0; i < element.length / commsLengthPerEntry; i++) {
         const entryPosition = parseInt(element.substr(i * commsLengthPerEntry, 4), 10)
@@ -66,35 +60,8 @@ export default {
     }
 
     // Create Mutation Observer, and observe
-    const observer = new MutationObserver(callback);
-    observer.observe(targetElement, config);
-
-
-
-    // Callback function to execute when changes are detected
-    const callbackHint = function(mutationsList, observer) {
-      const element = document.getElementById("commsHint").innerText;
-      const hintMoveArray = element.split(",");
-
-      // Have to do this because hints is read-only
-      while (outerThis.hints.length>0) {
-        outerThis.hints.pop();
-      }
-
-      if (element !== "") {
-        for (let i = 0; i < hintMoveArray.length; i++) {
-          const entryPosition = parseInt(hintMoveArray[i], 10);
-          const entryRole = parseInt("1", 10);
-          const x = Math.floor(entryPosition / boardLengthToBeRefactored);
-          const y = entryPosition % boardLengthToBeRefactored;
-          outerThis.hints.push({x, y, entryRole});
-        }
-      }
-    };
-
-    // Create Mutation Observer, and observe
-    const observerHint = new MutationObserver(callbackHint);
-    observerHint.observe(document.getElementById('commsHint'), config);
+    const observer = new MutationObserver(callback)
+    observer.observe(targetElement, config)
   },
   components: {
     Board
@@ -115,7 +82,6 @@ export default {
       board: (state) => state.board.board,
       steps: (state) => state.board.steps,
       stepsTail: (state) => state.board.stepsTail,
-      hints: state => state.board.hints,
       status: (state) => state.home.status,
       current_player: (state) => state.home.current_player,
       first: (state) => state.home.first,
@@ -206,7 +172,7 @@ export default {
       const x = position[0]
       const y = position[1]
       if (this.board[x][y] !== 0) {
-        throw new Error('BOARD SQUARE NOT EMPTY')
+        throw new Error('NOT_EMPTY')
       }
 
       this._set(position, this.current_player)

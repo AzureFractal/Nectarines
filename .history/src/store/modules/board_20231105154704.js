@@ -5,6 +5,7 @@ import {
   RESET_BOARD,
   BACKWARD,
   FORWARD,
+  SET_FIVES
 } from '../mutations.js'
 
 const getBoard = function (){
@@ -47,14 +48,14 @@ const state = {
   ],
   stepsTail: [
   ],
-  hints: [],
+  fives: []
 }
 
 const getters = {
   board: state => state.board,
   steps: state => state.steps,
   stepsTail: state => state.stepsTail,
-  hints: state => state.hints,
+  fives: state => state.fives,
 }
 
 const mutations = {
@@ -67,6 +68,9 @@ const mutations = {
   },
   [SET_STEPS] (state, steps) {
     state.steps = steps
+  },
+  [SET_FIVES] (state, fives) {
+    state.fives = fives
   },
   [ADD_CHESSMAN] (state, {position, role}) {
     let newBoard = copy(state.board)
@@ -114,6 +118,9 @@ const actions = {
   },
   [SET_STEPS] ({commit}, steps) {
     commit(SET_STEPS, steps)
+  },
+  [SET_FIVES] ({commit}, fives) {
+    commit(SET_FIVES, fives)
   },
   [ADD_CHESSMAN] ({commit}, c) {
     commit(ADD_CHESSMAN, c)

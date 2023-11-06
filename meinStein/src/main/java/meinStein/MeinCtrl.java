@@ -1226,6 +1226,7 @@ public class MeinCtrl {
 
             listEval(colToMove);
             listLen[2] = 0;
+            // minTval1 is the best number of enemy threats we can reduce.
             int minTval1 = 0;
             // Loop over square 1
             for (int n1 = 0; n1 < listLen[0] && !won; n1++) {

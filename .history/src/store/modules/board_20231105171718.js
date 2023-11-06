@@ -47,14 +47,12 @@ const state = {
   ],
   stepsTail: [
   ],
-  hints: [],
 }
 
 const getters = {
   board: state => state.board,
   steps: state => state.steps,
   stepsTail: state => state.stepsTail,
-  hints: state => state.hints,
 }
 
 const mutations = {

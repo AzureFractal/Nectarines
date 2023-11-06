@@ -56,8 +56,8 @@ public class Client {
         document.getElementById("comms").setInnerHTML(meinCtrl.curGame.getMovesEncoded());
         document.getElementById("comms1").setInnerHTML("Done");
         // For now we need a negative sign here because the score is for the AI
-        document.getElementById("scoreText").setInnerHTML("Score:" + (-score) +
-                " (+ve is good 4 u u r happy and healthy) <br> Your win prob:" +
+        document.getElementById("scoreText").setInnerHTML("Your Score: " + (-score) +
+                " <br> Your win prob: " +
                 Math.round((1.0 / (1.0+Math.exp(-0.001*-score)))*100)  + "%");
 
 //        String chainCountText = "";
@@ -112,6 +112,8 @@ public class Client {
                     result += ",";
                 }
                 result += meinCtrl.cur.listMoves[i].i1;
+                result += ":";
+                result += meinCtrl.cur.listMoves[i].score;
             }
             document.getElementById("commsHint").setInnerHTML(result);
         });

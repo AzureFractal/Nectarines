@@ -4,7 +4,6 @@ import {
   SET_STATUS,
   SET_FIRST,
   SET_RANDOM,
-  CHANGE_PLAYER
 } from '../mutations.js'
 
 import * as status from '@/status.js'
@@ -55,9 +54,6 @@ const mutations = {
   [SET_RANDOM] (state, random) {
     state.randomOpening = random
   },
-  [CHANGE_PLAYER] (state) {
-    state.current_player = (state.current_player === 1) ? 2 : 1
-  }
 }
 
 const actions = {
@@ -76,9 +72,6 @@ const actions = {
   [SET_RANDOM] ({commit}, s) {
     commit(SET_RANDOM, s)
   },
-  [CHANGE_PLAYER] ({commit}) {
-    commit(CHANGE_PLAYER)
-  }
 }
 
 export default {
