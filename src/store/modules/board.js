@@ -1,6 +1,4 @@
 import {
-  SET_BOARD,
-  SET_STEPS,
   ADD_CHESSMAN,
   RESET_BOARD,
   BACKWARD,
@@ -60,12 +58,6 @@ const mutations = {
     state.board = getBoard()
     state.steps = []
   },
-  [SET_BOARD] (state, board) {
-    state.board = board
-  },
-  [SET_STEPS] (state, steps) {
-    state.steps = steps
-  },
   [ADD_CHESSMAN] (state, {position, role}) {
     let newBoard = copy(state.board)
     newBoard[position[0]][position[1]] = role
@@ -106,12 +98,6 @@ const mutations = {
 const actions = {
   [RESET_BOARD] ({commit}) {
     commit(RESET_BOARD)
-  },
-  [SET_BOARD] ({commit}, board) {
-    commit(SET_BOARD, board)
-  },
-  [SET_STEPS] ({commit}, steps) {
-    commit(SET_STEPS, steps)
   },
   [ADD_CHESSMAN] ({commit}, c) {
     commit(ADD_CHESSMAN, c)

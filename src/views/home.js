@@ -5,8 +5,6 @@ import Board from '@/components/Board.vue'
 import {
   ADD_CHESSMAN,
   SET_STATUS,
-  SET_BOARD,
-  SET_STEPS,
   RESET_BOARD,
   FORWARD,
   BACKWARD,
@@ -70,13 +68,13 @@ export default {
   computed: {
     statusText() {
       if (this.status === STATUS.LOADING) {
-        return "Loading..."
+        return 'Loading...'
       } else if (this.status === STATUS.READY) {
-        return "Ready"
+        return 'Ready'
       } else if (this.status === STATUS.THINKING) {
-        return "Thinking.."
+        return 'AI is thinking...'
       } else if (this.status === STATUS.PLAYING) {
-        return "Playing"
+        return 'is playing. Make a move or click Calculate for AI.'
       } else return 'Loading...'
     },
     ...mapState({
@@ -102,7 +100,6 @@ export default {
     },
     start(first) {
       this.$refs.offensive.close()
-      this.$store.dispatch(SET_status, status.LOCKED)
       this.$store.dispatch(SET_FIRST, first)
       this.$store.dispatch(RESET_BOARD)
       this.showBigText('START!', () => {
@@ -116,11 +113,11 @@ export default {
         //    type: "BEGIN"
         //  });
         //}
-        this.$store.dispatch(SET_status, status.PLAYING)
+        this.$store.dispatch(SET_STATUS, status.PLAYING)
       })
     },
     end() {
-      this.$store.dispatch(SET_status, status.READY)
+      this.$store.dispatch(SET_STATUS, status.READY)
     },
 
     forward() {
@@ -136,13 +133,6 @@ export default {
       this.$store.dispatch(BACKWARD)
       this.worker.postMessage({
         type: 'BACKWARD'
-      })
-    },
-    give() {
-      this.$store.dispatch(SET_status, status.LOCKED)
-      this.$refs.give.close()
-      this.showBigText(this.$t('you lose'), () => {
-        this.end()
       })
     },
 
@@ -197,6 +187,25 @@ export default {
     },
     canForward() {
       return this.status === status.PLAYING && this.stepsTail.length >= 2
+    },
+
+    // Button functions
+    undoMove() {
+      var commsArr = document.getElementById('comms').innerText.split(',')
+      console.log(commsArr.slice(0, commsArr.length - 2))
+      document.getElementById('comms').innerText = commsArr.slice(0, commsArr.length - 2).join(',')
+    },
+    _callInner(innerBtnId) {
+      var clickEvent = new Event('click')
+      document.getElementById(innerBtnId).dispatchEvent(clickEvent)
+      this.$store.commit(SET_STATUS, STATUS.PLAYING)
+    },
+    _sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    callInner(innerBtnId) {
+      this.$store.commit(SET_STATUS, STATUS.THINKING)
+      this._sleep(100).then(() => this._callInner(innerBtnId))
     }
   }
 }
