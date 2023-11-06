@@ -5,12 +5,10 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
     <div class="wrapper">
-        <div class="greetings">
-    <h1 class="green">{{ "Nectarines" }}</h1>
-    <h3>
-      Play Connect Six!
-    </h3>
-  </div>
+      <div class="greetings">
+        <h1 class="green">{{ 'Nectarines' }}</h1>
+        <h3>Play Connect Six!</h3>
+      </div>
     </div>
   </header>
 
@@ -95,7 +93,7 @@ h3 {
   header {
     display: flex;
     margin: auto;
-    text-align: center
+    text-align: center;
   }
 
   .logo {
