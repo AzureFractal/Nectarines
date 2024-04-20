@@ -141,7 +141,7 @@ public class Client {
 
         elem = document.getElementById("diff4");
         elem.addEventListener("click", (e)->{
-            updateDifficulty(document, 4, 4);
+            updateDifficulty(document, Math.min(6, Math.max(4, Client.depth+1)), Math.min(6, Math.max(4, Client.quietDepth+1)));
         });
     }
 }
