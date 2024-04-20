@@ -223,9 +223,9 @@ export default {
 
     // Button functions
     undoMove() {
-      var commsArr = document.getElementById('comms').innerText.split(',')
-      console.log(commsArr.slice(0, commsArr.length - 2))
-      document.getElementById('comms').innerText = commsArr.slice(0, commsArr.length - 2).join(',')
+      var commsArr = document.getElementById('comms').innerText.replace(/,$/, "").split(',')
+      var trimLength = (commsArr.length % 2 === 0) ? 1 : 2;
+      document.getElementById('comms').innerText = commsArr.slice(0, commsArr.length - trimLength).join(',')
     },
     _callInner(innerBtnId) {
       var clickEvent = new Event('click')

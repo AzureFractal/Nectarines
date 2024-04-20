@@ -69,7 +69,7 @@ public class Client {
 //        document.getElementById("chainCount").setInnerHTML(chainCountText);
 
 
-        if (-MeinCtrl.posVal[MeinCtrl.DONE6] == score){
+        if (score == -MeinCtrl.posVal[MeinCtrl.DONE6]){
             document.getElementById("comms1").setInnerHTML("Black Won!");
         } else if (score == MeinCtrl.posVal[MeinCtrl.DONE6]) {
             document.getElementById("comms1").setInnerHTML("White Won!");
@@ -90,6 +90,8 @@ public class Client {
         meinCtrl = new MeinCtrl();
         // Render first piece
         document.getElementById("comms").setInnerHTML(meinCtrl.curGame.getMovesEncoded());
+        // Display default depth/quietDepth
+        updateDifficulty(document, Client.depth, Client.quietDepth);
 
         HTMLElement calcElem = document.getElementById("calculate");
         calcElem.addEventListener("click", (e)->{
@@ -99,7 +101,10 @@ public class Client {
         HTMLElement engineElem = document.getElementById("engine");
         engineElem.addEventListener("click", (e)->{
             for (int i = 0; i < 20; i++) {
-                readCommsAndPlayMove(document);
+                int score = readCommsAndPlayMove(document);
+                if (score == -MeinCtrl.posVal[MeinCtrl.DONE6] || score == MeinCtrl.posVal[MeinCtrl.DONE6]) {
+                    break;
+                }
             }
         });
 
@@ -121,22 +126,22 @@ public class Client {
         HTMLElement elem;
         elem = document.getElementById("diff1");
         elem.addEventListener("click", (e)->{
-            updateDifficulty(document,1, 1);
+            updateDifficulty(document, 1, 1);
         });
 
         elem = document.getElementById("diff2");
         elem.addEventListener("click", (e)->{
-            updateDifficulty(document,2, 2);
+            updateDifficulty(document, 2, 2);
         });
 
         elem = document.getElementById("diff3");
         elem.addEventListener("click", (e)->{
-            updateDifficulty(document,3, 3);
+            updateDifficulty(document, 3, 3);
         });
 
         elem = document.getElementById("diff4");
         elem.addEventListener("click", (e)->{
-            updateDifficulty(document,4, 4);
+            updateDifficulty(document, 4, 4);
         });
     }
 }
