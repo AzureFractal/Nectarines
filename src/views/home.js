@@ -105,7 +105,7 @@ export default {
       } else if (this.status === STATUS.THINKING) {
         return 'AI is thinking...'
       } else if (this.status === STATUS.PLAYING) {
-        return 'is playing. Make a move or click Calculate for AI.'
+        return 'is playing (your turn)'
       } else return 'Loading...'
     },
     ...mapState({
@@ -190,6 +190,25 @@ export default {
       return Math.floor((numSteps + 1) / 2) % 2
     },
 
+    // Button functions
+    undoMove() {
+      var commsArr = document.getElementById('comms').innerText.replace(/,$/, "").split(',')
+      var trimLength = (commsArr.length % 2 === 0) ? 1 : 2;
+      document.getElementById('comms').innerText = commsArr.slice(0, commsArr.length - trimLength).join(',')
+    },
+    _callInner(innerBtnId) {
+      var clickEvent = new Event('click')
+      document.getElementById(innerBtnId).dispatchEvent(clickEvent)
+      this.$store.commit(SET_STATUS, STATUS.PLAYING)
+    },
+    _sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms))
+    },
+    callInner(innerBtnId) {
+      this.$store.commit(SET_STATUS, STATUS.THINKING)
+      this._sleep(100).then(() => this._callInner(innerBtnId))
+    },
+
     set(position) {
       console.log(position)
       const x = position[0]
@@ -212,6 +231,14 @@ export default {
         tempString += ','
       }
       document.getElementById('comms').innerText = tempString
+
+      // if user placed both stones, call calculate as callback
+      if (this.steps.length > 2) {
+        let last_2_moves = tempString.split(',').slice(0,-1).slice(-2)
+        if (last_2_moves[0].slice(-1) == last_2_moves[1].slice(-1)) {
+          this.callInner('calculate')
+        }
+      }
     },
 
     canBackward() {
@@ -220,24 +247,5 @@ export default {
     canForward() {
       return this.status === status.PLAYING && this.stepsTail.length >= 2
     },
-
-    // Button functions
-    undoMove() {
-      var commsArr = document.getElementById('comms').innerText.replace(/,$/, "").split(',')
-      var trimLength = (commsArr.length % 2 === 0) ? 1 : 2;
-      document.getElementById('comms').innerText = commsArr.slice(0, commsArr.length - trimLength).join(',')
-    },
-    _callInner(innerBtnId) {
-      var clickEvent = new Event('click')
-      document.getElementById(innerBtnId).dispatchEvent(clickEvent)
-      this.$store.commit(SET_STATUS, STATUS.PLAYING)
-    },
-    _sleep(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms))
-    },
-    callInner(innerBtnId) {
-      this.$store.commit(SET_STATUS, STATUS.THINKING)
-      this._sleep(100).then(() => this._callInner(innerBtnId))
-    }
   }
 }

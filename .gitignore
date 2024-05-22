@@ -25,3 +25,4 @@ meinStein/target
 *.njsproj
 *.sln
 *.sw?
+bin/*

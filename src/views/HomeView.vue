@@ -55,8 +55,9 @@ h1 {
   color: black;
 }
 
+// hide the calculate and engine buttons
 #calculate,
-#engine {
+#engine, #outer-calculate, #outer-engine {
   display: None;
 }
 
